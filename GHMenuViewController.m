@@ -102,14 +102,14 @@
 
 - (void)addButtons: (UIView *)view {
     note = [UIButton buttonWithType:UIButtonTypeCustom];
-    [note setFrame:CGRectMake(5, -90, 150, 130)];
+    [note setFrame:CGRectMake(25, -90, 150, 130)];
     [note setBackgroundColor:[UIColor clearColor]];
     [note setShowsTouchWhenHighlighted:YES];
     [note setHidden:YES];
     [note addTarget:self action:@selector(noteButtonFunc) forControlEvents:UIControlEventTouchUpInside];
     [view addSubview:note];
     
-    songArtist = [[UILabel alloc] initWithFrame:CGRectMake(5, 92, 150, 22)];
+    songArtist = [[UILabel alloc] initWithFrame:CGRectMake(25, 92, 150, 22)];
     [songArtist setBackgroundColor:[UIColor clearColor]];
     [songArtist setFont:[UIFont fontWithName:@"Helvetica-Bold" size:14]];
     [songArtist setTextAlignment:NSTextAlignmentLeft];
@@ -119,7 +119,7 @@
     [songArtist setShadowColor:[UIColor blackColor]];
     [songArtist setShadowOffset:CGSizeMake(0, 1)];
     
-    songTitle = [[UILabel alloc] initWithFrame:CGRectMake(5, 114, 150, 22)];
+    songTitle = [[UILabel alloc] initWithFrame:CGRectMake(25, 114, 200, 22)];
     [songTitle setBackgroundColor:[UIColor clearColor]];
     [songTitle setFont:[UIFont fontWithName:@"Helvetica-Bold" size:10]];
     [songTitle setTextAlignment:NSTextAlignmentLeft];
@@ -133,7 +133,7 @@
     [note addSubview:songTitle];
     
     playpause = [UIButton buttonWithType:UIButtonTypeCustom];
-    [playpause setFrame:CGRectMake(170, 0, 40, 44)];
+    [playpause setFrame:CGRectMake(5, 0, 40, 44)];
     [playpause setBackgroundColor:[UIColor clearColor]];
     [playpause setImage:[UIImage imageNamed:@"play.png"] forState:UIControlStateNormal];
     [playpause setImageEdgeInsets:UIEdgeInsetsMake(12, 10, 10, 10)];
@@ -141,7 +141,7 @@
     [playpause setShowsTouchWhenHighlighted:YES];
     [view addSubview:playpause];
     
-    UIButton *rwd = [UIButton buttonWithType:UIButtonTypeCustom];
+    /*    UIButton *rwd = [UIButton buttonWithType:UIButtonTypeCustom];
     [rwd setFrame:CGRectMake(130, 0, 40, 44)];
     [rwd setBackgroundColor:[UIColor clearColor]];
     [rwd setImage:[UIImage imageNamed:@"reward.png"] forState:UIControlStateNormal];
@@ -157,7 +157,7 @@
     [fwd setImageEdgeInsets:UIEdgeInsetsMake(12, 10, 10, 10)];
     [fwd addTarget:self action:@selector(rwdFunc) forControlEvents:UIControlEventTouchUpInside];
     [fwd setShowsTouchWhenHighlighted:YES];
-    [view addSubview:fwd];
+    [view addSubview:fwd]; */
 }
 
 - (void)playerOpen {

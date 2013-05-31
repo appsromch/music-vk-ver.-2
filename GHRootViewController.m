@@ -63,6 +63,7 @@
     table = [[UITableView alloc] init];
     [table setDelegate:self];
     [table setDataSource:self];
+    [table setBackgroundColor:[UIColor colorWithWhite:0.92 alpha:1]];
     allSongsLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 18)];
     [allSongsLabel setBackgroundColor:[UIColor clearColor]];
     [allSongsLabel setTextAlignment:NSTextAlignmentCenter];
@@ -182,6 +183,10 @@
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:SimpleTableIdentifier];
     if (cell == nil) {
         cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:SimpleTableIdentifier];
+        [cell.contentView setBackgroundColor:[UIColor colorWithWhite:0.98 alpha:1]];
+        UIView *line = [[UIView alloc] initWithFrame:CGRectMake(0, 0, cell.frame.size.width, 1)];
+        [line setBackgroundColor:[UIColor whiteColor]];
+        [cell.contentView addSubview:line];
     }
     [self configureCell:cell atIndexPath:indexPath];
     return cell;
@@ -303,8 +308,10 @@
     NSManagedObject *managedObject = [self.fetchedResultsController objectAtIndexPath:indexPath];
     cell.textLabel.text = [[managedObject valueForKey:@"title"] description];
     [cell.textLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:15]];
+    [cell.textLabel setBackgroundColor:[UIColor clearColor]];
     cell.detailTextLabel.text = [[managedObject valueForKey:@"artist"] description];
     [cell.detailTextLabel setFont:[UIFont fontWithName:@"Helvetica" size:12]];
+    [cell.detailTextLabel setBackgroundColor:[UIColor clearColor]];
 }
 
 - (void)insertNewObject
