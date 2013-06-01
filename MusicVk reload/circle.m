@@ -22,7 +22,7 @@
     self = [super initWithFrame:frame];
     if (self) {
         // Initialization code
-        self.backgroundColor = [UIColor whiteColor];
+        self.backgroundColor = [UIColor clearColor];
         
         // Determine our start and stop angles for the arc (in radians)
         startAngle = M_PI * 1.5;
@@ -48,7 +48,7 @@
     
     // Set the display for the path, and stroke it
     bezierPath.lineWidth = 12;
-    [[UIColor colorWithWhite:0.1 alpha:0.1] setStroke];
+    [[UIColor colorWithWhite:1 alpha:0.1] setStroke];
     [bezierPath stroke];
     
     UIBezierPath* bezierPath2 = [UIBezierPath bezierPath];
@@ -62,7 +62,7 @@
     
     // Set the display for the path, and stroke it
     bezierPath2.lineWidth = 12;
-    [[UIColor colorWithWhite:0.1 alpha:0.04] setStroke];
+    [[UIColor colorWithWhite:1 alpha:0.04] setStroke];
     [bezierPath2 stroke];
     
     // Text Drawing

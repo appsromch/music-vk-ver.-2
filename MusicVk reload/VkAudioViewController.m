@@ -46,7 +46,7 @@
         [rightButton setBackgroundColor:[UIColor clearColor]];
         [rightButton setAutoresizingMask:UIViewAutoresizingFlexibleHeight];
         [rightButton setTitle:title forState:UIControlStateNormal];
-        [rightButton setTitleColor:[UIColor colorWithWhite:0.4 alpha:1] forState:UIControlStateNormal];
+        [rightButton setTitleColor:[UIColor colorWithWhite:1 alpha:0.7] forState:UIControlStateNormal];
         [rightButton setTitleColor:[UIColor colorWithWhite:0.1 alpha:1] forState:UIControlStateHighlighted];
         [rightButton.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Light" size:18]];
         [rightButton.titleLabel setTextAlignment:NSTextAlignmentRight];
@@ -69,6 +69,9 @@
     table = [[UITableView alloc] init];
     [table setDelegate:self];
     [table setDataSource:self];
+    //[table setBackgroundColor:[UIColor colorWithWhite:0.92 alpha:1]];
+    [table setBackgroundColor:[UIColor clearColor]];
+    [table setSeparatorColor:[UIColor colorWithWhite:0 alpha:0.05]];
     UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 1)];
     [footerView setBackgroundColor:[UIColor clearColor]];
     [table setTableFooterView:footerView];
@@ -234,6 +237,12 @@
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:SimpleTableIdentifier];
     if (cell == nil) {
         cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:SimpleTableIdentifier];
+        //[cell.contentView setBackgroundColor:[UIColor colorWithWhite:0.98 alpha:1]];
+        [cell.contentView setBackgroundColor:[UIColor clearColor]];
+        
+        //  UIView *line = [[UIView alloc] initWithFrame:CGRectMake(0, 0, cell.frame.size.width, 1)];
+        //  [line setBackgroundColor:[UIColor whiteColor]];
+        //  [cell.contentView addSubview:line];
     }
     
     NSDictionary *dict = [audioArray objectAtIndex:indexPath.row];
@@ -243,19 +252,29 @@
     name = [name stringByReplacingOccurrencesOfString:@"&amp;" withString:@"&"];
     name = [name stringByReplacingOccurrencesOfString:@"&quot;" withString:@"\""];
     cell.textLabel.text = name;
-    [cell.textLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:16]];
+   // [cell.textLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:16]];
     NSString *art = [dict objectForKey:@"artist"];
     art = [art stringByReplacingOccurrencesOfString:@"&#39;" withString:@"'"];
     art = [art stringByReplacingOccurrencesOfString:@"&#33;" withString:@"!"];
     art = [art stringByReplacingOccurrencesOfString:@"&amp;" withString:@"&"];
     art = [art stringByReplacingOccurrencesOfString:@"&quot;" withString:@"\""];
+    
+    //  [cell.textLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:15]];
+    [cell.textLabel setFont:[UIFont fontWithName:@"Helvetica-Light" size:16]];
+    [cell.textLabel setTextColor:[UIColor whiteColor]];
+    [cell.textLabel setBackgroundColor:[UIColor clearColor]];
+
+    [cell.detailTextLabel setFont:[UIFont fontWithName:@"Helvetica-Light" size:12]];
+    [cell.detailTextLabel setTextColor:[UIColor colorWithWhite:1 alpha:0.7]];
+    [cell.detailTextLabel setBackgroundColor:[UIColor clearColor]];
+    
     [cell.textLabel setText:name];
     [cell.detailTextLabel setText:art];
     if ([cell.contentView.subviews count] > 2) {
         UIView *view = [cell.contentView.subviews objectAtIndex:2];
         if (view.tag != indexPath.row) [view removeFromSuperview];
     }
-    NSLog(@"%d, %@", indexPath.row, cell.contentView.subviews);
+  //  NSLog(@"%d, %@", indexPath.row, cell.contentView.subviews);
     return cell;
     
 }
@@ -267,7 +286,7 @@
         UITableViewCell *cell = [table cellForRowAtIndexPath:indexPath];
         [cell setSelected:NO];
         [cell setHighlighted:NO];
-        NSLog(@"swiped 1 %@", cell.contentView.subviews);
+       // NSLog(@"swiped 1 %@", cell.contentView.subviews);
         if (cell.contentView.subviews.count == 2) {
             NSLog(@"swiped 2");
             UIView *view = [[UIView alloc] initWithFrame:CGRectMake(320, 0, 0, 44)];
@@ -461,6 +480,7 @@
     NSManagedObject *newManagedObject = [NSEntityDescription insertNewObjectForEntityForName:[entity name]
                                                                       inManagedObjectContext:context];
     NSString *randomUUID = [self GetUUID];
+    randomUUID = [randomUUID stringByAppendingPathExtension:@"mp3"];
     NSLog(@"%@", randomUUID);
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *documentsDirectory = [paths objectAtIndex:0];

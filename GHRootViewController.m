@@ -44,7 +44,7 @@
         [rightButton setBackgroundColor:[UIColor clearColor]];
         [rightButton setAutoresizingMask:UIViewAutoresizingFlexibleHeight];
         [rightButton setTitle:title forState:UIControlStateNormal];
-        [rightButton setTitleColor:[UIColor colorWithWhite:0.4 alpha:1] forState:UIControlStateNormal];
+        [rightButton setTitleColor:[UIColor colorWithWhite:1 alpha:0.7] forState:UIControlStateNormal];
         [rightButton setTitleColor:[UIColor colorWithWhite:0.1 alpha:1] forState:UIControlStateHighlighted];
         [rightButton.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Light" size:18]];
         [rightButton.titleLabel setTextAlignment:NSTextAlignmentRight];
@@ -63,12 +63,14 @@
     table = [[UITableView alloc] init];
     [table setDelegate:self];
     [table setDataSource:self];
-    [table setBackgroundColor:[UIColor colorWithWhite:0.92 alpha:1]];
+    //[table setBackgroundColor:[UIColor colorWithWhite:0.92 alpha:1]];
+    [table setBackgroundColor:[UIColor clearColor]];
+    [table setSeparatorColor:[UIColor colorWithWhite:0 alpha:0.05]];
     allSongsLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 18)];
     [allSongsLabel setBackgroundColor:[UIColor clearColor]];
     [allSongsLabel setTextAlignment:NSTextAlignmentCenter];
     [allSongsLabel setTextColor:[UIColor colorWithWhite:0.75 alpha:1]];
-    [allSongsLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:12]];
+    [allSongsLabel setFont:[UIFont fontWithName:@"Helvetica-Light" size:12]];
     [table setTableFooterView:allSongsLabel];
     refreshControl = [[ODRefreshControl alloc] initInScrollView:table];
     [refreshControl addTarget:self action:@selector(dropViewPulled) forControlEvents:UIControlEventValueChanged];
@@ -183,10 +185,12 @@
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:SimpleTableIdentifier];
     if (cell == nil) {
         cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:SimpleTableIdentifier];
-        [cell.contentView setBackgroundColor:[UIColor colorWithWhite:0.98 alpha:1]];
-        UIView *line = [[UIView alloc] initWithFrame:CGRectMake(0, 0, cell.frame.size.width, 1)];
-        [line setBackgroundColor:[UIColor whiteColor]];
-        [cell.contentView addSubview:line];
+        //[cell.contentView setBackgroundColor:[UIColor colorWithWhite:0.98 alpha:1]];
+        [cell.contentView setBackgroundColor:[UIColor clearColor]];
+        
+      //  UIView *line = [[UIView alloc] initWithFrame:CGRectMake(0, 0, cell.frame.size.width, 1)];
+      //  [line setBackgroundColor:[UIColor whiteColor]];
+      //  [cell.contentView addSubview:line];
     }
     [self configureCell:cell atIndexPath:indexPath];
     return cell;
@@ -307,10 +311,13 @@
 {
     NSManagedObject *managedObject = [self.fetchedResultsController objectAtIndexPath:indexPath];
     cell.textLabel.text = [[managedObject valueForKey:@"title"] description];
-    [cell.textLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:15]];
+  //  [cell.textLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:15]];
+    [cell.textLabel setFont:[UIFont fontWithName:@"Helvetica-Light" size:16]];
+    [cell.textLabel setTextColor:[UIColor whiteColor]];
     [cell.textLabel setBackgroundColor:[UIColor clearColor]];
     cell.detailTextLabel.text = [[managedObject valueForKey:@"artist"] description];
-    [cell.detailTextLabel setFont:[UIFont fontWithName:@"Helvetica" size:12]];
+    [cell.detailTextLabel setFont:[UIFont fontWithName:@"Helvetica-Light" size:12]];
+    [cell.detailTextLabel setTextColor:[UIColor colorWithWhite:1 alpha:0.7]];
     [cell.detailTextLabel setBackgroundColor:[UIColor clearColor]];
 }
 

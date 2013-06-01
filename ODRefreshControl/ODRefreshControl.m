@@ -100,6 +100,8 @@ static inline CGFloat lerp(CGFloat a, CGFloat b, CGFloat p)
         _highlightLayer = [CAShapeLayer layer];
         _highlightLayer.fillColor = [[[UIColor whiteColor] colorWithAlphaComponent:0.2] CGColor];
         [_shapeLayer addSublayer:_highlightLayer];
+        
+        [self setAlpha:0.3];
     }
     return self;
 }

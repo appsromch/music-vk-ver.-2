@@ -20,7 +20,22 @@
     if (self) {
         // Custom initialization
         [self.navigationBar setAlpha:1];
-        [self.navigationBar setBackgroundImage:[UIImage imageNamed:@"navBg2.png"] forBarMetrics:UIBarMetricsDefault];
+      //  [self.navigationBar setBackgroundImage:[UIImage imageNamed:@"navBg2.png"] forBarMetrics:UIBarMetricsDefault];
+        [self.navigationBar setBackgroundImage:[UIImage imageNamed:@"navnew.png"] forBarMetrics:UIBarMetricsDefault];
+       
+        NSUserDefaults *ud = [NSUserDefaults standardUserDefaults];
+        NSString *bgname = [ud objectForKey:@"bgPic"];
+        if (bgname == nil) {
+            bgname = @"player1.jpg";
+            [ud setValue:bgname forKey:@"bgPic"];
+            [ud synchronize];
+        }
+        [self.view setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:bgname]]];
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(setBg)
+                                                     name:@"newBg"
+                                                   object:nil];
     }
     return self;
 }
@@ -29,6 +44,11 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
+}
+
+- (void) setBg {
+    NSUserDefaults *ud = [NSUserDefaults standardUserDefaults];
+    [self.view setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:[ud objectForKey:@"bgPic"]]]];
 }
 
 - (void)didReceiveMemoryWarning

@@ -12,6 +12,7 @@
 #import <AVFoundation/AVFoundation.h>
 #import <AudioToolbox/AudioToolbox.h>
 #import <MediaPlayer/MediaPlayer.h>
+#import "circle.h"
 
 @interface PlayerViewController : UIViewController <NSFetchedResultsControllerDelegate, AVAudioPlayerDelegate, AVAudioSessionDelegate, NSURLConnectionDelegate> {
     MPMusicPlayerController *mplayer;
@@ -36,6 +37,7 @@
     UIButton *repeatButton;
     UIButton *randomButton;
     UIButton *saveButton;
+    UIButton *settings;
     UIImage *playBtnBg;
     UIImage *pauseBtnBg;
     int currentNumber;
@@ -44,12 +46,15 @@
     BOOL isRandom;
     int loops;
     float rLenght;
+    circle *circleView;
+    UIView *back;
 }
 
 @property (nonatomic, retain) NSMutableArray *songDictionary;
 @property (nonatomic, retain) NSDictionary *allSongs;
 @property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
 @property (strong, nonatomic) NSManagedObjectContext *managedObjectContext;
+@property (nonatomic, strong) UIView *back;
 
 - (id)initWithRevealBlock:(RevealBlock)revealBlock andManagedObject:(NSManagedObjectContext *)managedObjectC;
 

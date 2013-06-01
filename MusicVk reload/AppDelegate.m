@@ -88,8 +88,14 @@
 			[((UINavigationController *)obj2).navigationBar addGestureRecognizer:panGesture];
 		}];
 	}];
-    NavController *playerNC = [[NavController alloc] initWithRootViewController:[[PlayerViewController alloc]initWithRevealBlock:revealBlock andManagedObject:self.managedObjectContext]];
-    [playerNC.navigationBar setBackgroundImage:[UIImage imageNamed:@"playerNavBg.png"] forBarMetrics:UIBarMetricsDefault];
+      
+    PlayerViewController *playerVC = [[PlayerViewController alloc]initWithRevealBlock:revealBlock andManagedObject:self.managedObjectContext];
+    
+    NavController *playerNC = [[NavController alloc] initWithRootViewController:playerVC];
+   // [playerNC.navigationBar setBackgroundImage:[UIImage imageNamed:@"playerNavBg.png"] forBarMetrics:UIBarMetricsDefault];
+   // [playerNC.navigationBar setBackgroundColor:[UIColor colorWithWhite:1 alpha:0.05]];
+    [playerNC.navigationBar setHidden:YES];
+    
 	self.menuController = [[GHMenuViewController alloc] initWithSidebarViewController:self.revealController
 																		withSearchBar:nil
 																		  withHeaders:headers

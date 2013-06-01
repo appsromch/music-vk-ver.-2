@@ -7,14 +7,17 @@
 //
 
 #import "PlayerViewController.h"
+
 #import <QuartzCore/QuartzCore.h>
+#import <AudioToolbox/AudioToolbox.h>
+#import "DirectionPanGestureRecognizer.h"
 
 @interface PlayerViewController ()
 
 @end
 
 @implementation PlayerViewController
-@synthesize songDictionary, allSongs, managedObjectContext, fetchedResultsController;
+@synthesize songDictionary, allSongs, managedObjectContext, fetchedResultsController, back;
 
 - (id)initWithRevealBlock:(RevealBlock)revealBlock andManagedObject:(NSManagedObjectContext *)managedObjectC
 {
@@ -29,21 +32,11 @@
         [[AVAudioSession sharedInstance] setCategory: AVAudioSessionCategoryPlayback error:nil];
         [[AVAudioSession sharedInstance] setActive: YES error: nil];
         
-        UIButton *buttonBack = [UIButton buttonWithType:UIButtonTypeCustom];
-        [buttonBack setFrame:CGRectMake(40, 10, 30, 19)];
-        [buttonBack setImage:[UIImage imageNamed:@"playerBack.png"] forState:UIControlStateNormal];
-        [buttonBack addTarget:self action:@selector(revealSidebar) forControlEvents:UIControlEventTouchUpInside];
-       // [buttonBack setImage:[UIImage imageNamed:@"menu2pressed.png"] forState:UIControlStateHighlighted];
-        [buttonBack setShowsTouchWhenHighlighted:YES];
-        UIBarButtonItem *backButton = [[UIBarButtonItem alloc]
-                                       initWithCustomView:buttonBack];
-        [self.navigationItem setLeftBarButtonItem: backButton];
-        [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"playerNavBg.png"] forBarMetrics:UIBarMetricsDefault];
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(newSong:)
                                                      name:@"newSong"
                                                    object:nil];
-        [self.view setBackgroundColor:[UIColor colorWithWhite:0.1 alpha:1]];
+        
         isRandom = [[NSUserDefaults standardUserDefaults] boolForKey:@"isRandom"];
         loops = [[NSString stringWithFormat:@"%@", [[NSUserDefaults standardUserDefaults] objectForKey:@"isRepeat"]] intValue];
         [[NSNotificationCenter defaultCenter] addObserver:self
@@ -63,7 +56,7 @@
                                                 name:@"AVSystemController_SystemVolumeDidChangeNotification"
                                                    object:nil];
         mplayer = [MPMusicPlayerController iPodMusicPlayer];
-        [self performSelectorOnMainThread:@selector(customMake) withObject:self waitUntilDone:YES];
+        [self performSelectorOnMainThread:@selector(customMake2) withObject:self waitUntilDone:YES];
         [self registerForBackgroundNotifications];
         // Custom initialization
     }
@@ -72,13 +65,137 @@
 
 - (void)viewDidLoad
 {
+    [self.navigationController.navigationBar setHidden:YES];
     [super viewDidLoad];
     
 }
 
+- (void) customMake2 {
+    [self.navigationController.navigationBar setHidden:YES];
+    NSUserDefaults *ud = [NSUserDefaults standardUserDefaults];
+    [self.view setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:[ud objectForKey:@"bgPic"]]]];
+    circleView = [[circle alloc] initWithFrame:self.view.bounds];
+    //[m_testView setAlpha:0.3];
+    circleView.percent = 100;
+    
+    CGRect screen = [[UIScreen mainScreen] bounds];
+    songTitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(20, screen.size.height/2 - 60, 280, 50)];
+    songArtistLabel = [[UILabel alloc] initWithFrame:CGRectMake(20, screen.size.height/2 - 10, 280, 40)];
+    
+    songTime = [[UILabel alloc] initWithFrame:CGRectMake(screen.size.width/2 - 40, screen.size.height/2 + 40, 55, 30)];
+    [songTime setBackgroundColor:[UIColor clearColor]];
+    [songTime setTextAlignment:NSTextAlignmentCenter];
+    [songTime setTextColor:[UIColor colorWithWhite:1 alpha:0.5]];
+    [songTime setFont:[UIFont fontWithName:@"Helvetica" size:12]];
+    [songTime setText:@"00:00 /"];
+    
+    songTimeLeft = [[UILabel alloc] initWithFrame:CGRectMake(screen.size.width/2, screen.size.height/2 + 40, 40, 30)];
+    [songTimeLeft setBackgroundColor:[UIColor clearColor]];
+    [songTimeLeft setTextAlignment:NSTextAlignmentCenter];
+    [songTimeLeft setTextColor:[UIColor colorWithWhite:1 alpha:0.5]];
+    [songTimeLeft setFont:[UIFont fontWithName:@"Helvetica" size:12]];
+    [songTimeLeft setText:@"00:00"];
+    
+    [songTitleLabel setBackgroundColor:[UIColor clearColor]];
+    [songTitleLabel setNumberOfLines:0];
+    [songTitleLabel setTextAlignment:NSTextAlignmentCenter];
+    [songTitleLabel setFont:[UIFont fontWithName:@"Helvetica-Light" size:20]];
+    [songTitleLabel setTextColor:[UIColor colorWithWhite:1 alpha:1]];
+    [songTitleLabel setNumberOfLines:2];
+   // [songTitleLabel setShadowColor:[UIColor blackColor]];
+   // [songTitleLabel setShadowOffset:CGSizeMake(0, 1)];
+    [songTitleLabel setText:@""];
+    
+    [songArtistLabel setBackgroundColor:[UIColor clearColor]];
+    [songArtistLabel setNumberOfLines:0];
+    [songArtistLabel setTextAlignment:NSTextAlignmentCenter];
+    [songArtistLabel setFont:[UIFont fontWithName:@"Helvetica-Light" size:14]];
+    [songArtistLabel setTextColor:[UIColor colorWithWhite:1 alpha:1]];
+  //  [songArtistLabel setShadowColor:[UIColor blackColor]];
+  //  [songArtistLabel setShadowOffset:CGSizeMake(0, 1)];
+    [songArtistLabel setText:@""];
+    
+    loadLabel = [[UILabel alloc] initWithFrame:CGRectMake(screen.size.width/2 - 50, 10, 100, 20)];
+    [loadLabel setBackgroundColor:[UIColor clearColor]];
+    [loadLabel setTextAlignment:NSTextAlignmentCenter];
+    [loadLabel setTextColor:[UIColor colorWithWhite:0.99 alpha:0.4]];
+    [loadLabel setFont:[UIFont fontWithName:@"Helvetica-Light" size:12]];
+    [loadLabel setHidden:YES];
+    
+    saveButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [saveButton setFrame:CGRectMake(screen.size.width/2 - 12, 5, 25, 25)];
+    [saveButton setImage:[UIImage imageNamed:@"cellSave.png"] forState:UIControlStateNormal];
+    [saveButton setImage:[UIImage imageNamed:@"cellSaved.png"] forState:UIControlStateSelected];
+    [saveButton addTarget:self action:@selector(saveFunc) forControlEvents:UIControlEventTouchUpInside];
+    [saveButton setShowsTouchWhenHighlighted:YES];
+    [saveButton setHidden:YES];
+    
+    playBtnBg = [UIImage imageNamed:@"bigplay.png"];
+    pauseBtnBg = [UIImage imageNamed:@"bigpause.png"];
+    
+    playButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [playButton setFrame:CGRectMake(screen.size.width/2 - 52, screen.size.height/2 - 70, 111, 122)];
+    [playButton setBackgroundColor:[UIColor clearColor]];
+    [playButton setAlpha:0.12];
+    [playButton setShowsTouchWhenHighlighted:YES];
+    [playButton setImage:playBtnBg forState:UIControlStateNormal];
+    [playButton addTarget:self action:@selector(didGetPlayerPlay) forControlEvents:UIControlEventTouchUpInside];
+    
+    UISwipeGestureRecognizer *fwd = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(didGetPlayerFwd)];
+    fwd.direction = UISwipeGestureRecognizerDirectionRight;
+    [self.view addGestureRecognizer:fwd];
+    UISwipeGestureRecognizer *rwd = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(didGetPlayerRwd)];
+    rwd.direction = UISwipeGestureRecognizerDirectionLeft;
+    [self.view addGestureRecognizer:rwd];
+    
+    repeatButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [repeatButton setFrame:CGRectMake(screen.size.width - 94, 5, 40, 32)];
+    [repeatButton setAlpha:0.25];
+    [repeatButton setImage:[UIImage imageNamed:@"repeat.png"] forState:UIControlStateNormal];
+    [repeatButton addTarget:self action:@selector(repeatButton:) forControlEvents:UIControlEventTouchUpInside];
+    
+    randomButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [randomButton setFrame:CGRectMake(screen.size.width - 54, 5, 40, 32)];
+    [randomButton setAlpha:0.25];
+    [randomButton setImage:[UIImage imageNamed:@"rand.png"] forState:UIControlStateNormal];
+    [randomButton addTarget:self action:@selector(randomButton:) forControlEvents:UIControlEventTouchUpInside];
+    
+    settings = [UIButton buttonWithType:UIButtonTypeCustom];
+    [settings setFrame:CGRectMake(screen.size.width/2 - 20, screen.size.height - 60, 40, 40)];
+    [settings setImage:[UIImage imageNamed:@"set.png"] forState:UIControlStateNormal];
+    [settings setAlpha:0.25];
+    [settings addTarget:self action:@selector(settingsFunc) forControlEvents:UIControlEventTouchUpInside];
+    
+    NSString *strRepeat = [ud objectForKey:@"isRepeat"];
+    isRandom = [ud boolForKey:@"isRandom"];
+    if (isRandom) {
+        [randomButton setAlpha:0.7];
+    }
+    else {
+        [randomButton setAlpha:0.25];
+    }
+    if ([strRepeat intValue] == -1) {
+        player.numberOfLoops = -1;
+        loops = -1;
+        [repeatButton setAlpha:0.7];
+    }
+    else if ([strRepeat intValue] == 0) {
+        player.numberOfLoops = 0;
+        loops = 0;
+        [repeatButton setAlpha:0.25];
+    }
+    else if ([strRepeat intValue] == 1) {
+        player.numberOfLoops = 0;
+        loops = 1;
+        [repeatButton setAlpha:0.7];
+    }
+    
+    [self performSelectorOnMainThread:@selector(addToView2) withObject:self waitUntilDone:NO];
+}
+
 - (void) customMake {
     CGRect screen = [[UIScreen mainScreen] bounds];
-    
+    [self.view setBackgroundColor:[UIColor colorWithWhite:0.1 alpha:1]];
     songTitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(20, 80, 280, 40)];
     songArtistLabel = [[UILabel alloc] initWithFrame:CGRectMake(20, 122, 280, 40)];
     
@@ -90,7 +207,7 @@
     NSString *songNumber = [[NSUserDefaults standardUserDefaults] objectForKey:@"songNumber"];
     currentNumber = songNumber.intValue;
     int numForLabel = currentNumber + 1;
-    [songNumLabel setText:[NSString stringWithFormat:@"%d из %d", numForLabel, [[self.fetchedResultsController fetchedObjects] count]]];
+    [songNumLabel setText:[NSString stringWithFormat:@"%d из %d", numForLabel, [[self.fetchedResultsController fetchedObjects] count]]]; 
     
     progressSlider = [[UISlider alloc] initWithFrame:CGRectMake(40, 10, 240, 30)];
     [progressSlider setBackgroundColor:[UIColor clearColor]];
@@ -98,7 +215,7 @@
     [progressSlider addTarget:self action:@selector(progressSliderMoved:) forControlEvents:UIControlEventValueChanged];
     [progressSlider setMaximumTrackTintColor:[UIColor colorWithWhite:0.1 alpha:1]];
     [progressSlider setThumbImage:[UIImage imageNamed:@"volumepointer.png"] forState:UIControlStateNormal];
-    [progressSlider setThumbImage:[UIImage imageNamed:@"volumepointer.png"] forState:UIControlStateHighlighted];
+    [progressSlider setThumbImage:[UIImage imageNamed:@"volumepointer.png"] forState:UIControlStateHighlighted]; 
     
     songTime = [[UILabel alloc] initWithFrame:CGRectMake(0, 10, 40, 30)];
     [songTime setBackgroundColor:[UIColor clearColor]];
@@ -169,7 +286,7 @@
     [volumeSlider setMaximumTrackTintColor:[UIColor colorWithWhite:0.05 alpha:0.7]];
     [volumeSlider setThumbImage:[UIImage imageNamed:@"volumepointer.png"] forState:UIControlStateNormal];
     [volumeSlider setThumbImage:[UIImage imageNamed:@"volumepointer.png"] forState:UIControlStateHighlighted];
-    [bottomView addSubview:volumeSlider];
+    [bottomView addSubview:volumeSlider]; 
     
     playBtnBg = [UIImage imageNamed:@"play.png"];
     pauseBtnBg = [UIImage imageNamed:@"pause.png"];
@@ -203,7 +320,7 @@
     randomButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [randomButton setFrame:CGRectMake(rwdButton.frame.origin.x - 50, rwdButton.frame.origin.y + 2, 24, 25)];
     [randomButton setImage:[UIImage imageNamed:@"rand.png"] forState:UIControlStateNormal];
-    [randomButton addTarget:self action:@selector(randomButton:) forControlEvents:UIControlEventTouchUpInside];
+    [randomButton addTarget:self action:@selector(randomButton:) forControlEvents:UIControlEventTouchUpInside]; 
     
     NSUserDefaults *ud = [NSUserDefaults standardUserDefaults];
     NSString *strRepeat = [ud objectForKey:@"isRepeat"];
@@ -233,6 +350,40 @@
     [self performSelectorOnMainThread:@selector(addToView) withObject:self waitUntilDone:NO];
 }
 
+- (void) addToView2 {
+    [self.view addSubview:circleView];
+    [self.view addSubview:songTimeLeft];
+    [self.view addSubview:songTime];
+    [self.view addSubview:songArtistLabel];
+    [self.view addSubview:songTitleLabel];
+    [self.view addSubview:loadLabel];
+    [self.view addSubview:playButton];
+    [self.view addSubview:repeatButton];
+    [self.view addSubview:randomButton];
+    [self.view addSubview:saveButton];
+    UIButton *buttonBack = [UIButton buttonWithType:UIButtonTypeCustom];
+    [buttonBack setFrame:CGRectMake(10, 7, 50, 30)];
+    [buttonBack setAlpha:0.2];
+   // [buttonBack setImage:[UIImage imageNamed:@"newback2.png"] forState:UIControlStateNormal];
+    [buttonBack setImage:[UIImage imageNamed:@"playerBack.png"] forState:UIControlStateNormal];
+    
+    [buttonBack addTarget:self action:@selector(revealSidebar) forControlEvents:UIControlEventTouchUpInside];
+    // [buttonBack setImage:[UIImage imageNamed:@"menu2pressed.png"] forState:UIControlStateHighlighted];
+    [buttonBack setShowsTouchWhenHighlighted:NO];
+    [self.view addSubview:buttonBack];
+    //  [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"playerNavBg.png"] forBarMetrics:UIBarMetricsDefault];
+    
+    DirectionPanGestureRecognizer *volume = [[DirectionPanGestureRecognizer alloc] initWithTarget:self action:@selector(handleVolume:)];
+    volume.direction = DirectionPanGestureRecognizerHorizontal;
+    [volume setMaximumNumberOfTouches:1];
+    [volume setDelaysTouchesBegan:YES];
+    UIView *volumeView = [[UIView alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height - 50, self.view.frame.size.width, 50)];
+    [volumeView setBackgroundColor:[UIColor clearColor]];
+    [self.view addSubview:volumeView];
+    [volumeView addGestureRecognizer:volume];
+     [self.view addSubview:settings];
+}
+
 - (void) addToView {
     [self.navigationController.navigationBar addSubview:songNumLabel];
     [self.view addSubview:progressSlider];
@@ -249,33 +400,61 @@
     [self.view addSubview:randomButton];
 }
 
+- (void) settingsFunc {
+    NSArray *arr = [NSArray arrayWithObjects:@"playerbg1.jpg", @"playerbg2.jpg", @"playerbg3.jpg", @"playerbg4.jpg", @"playerbg5.jpg", nil];
+    int randNum = arc4random_uniform(5);
+    [self.view setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:[arr objectAtIndex:randNum]]]];
+    NSUserDefaults *ud = [NSUserDefaults standardUserDefaults];
+    [ud setValue:[arr objectAtIndex:randNum] forKey:@"bgPic"];
+    [ud synchronize];
+    NSLog(@"settings");
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"newBg" object:nil];
+}
+
+- (void)handleVolume:(UIPanGestureRecognizer*)recognizer {
+    
+    CGPoint translation = [recognizer translationInView:recognizer.view];
+    
+    if (translation.x < 0.0f) {
+        mplayer.volume = mplayer.volume - 0.01;
+    }
+    else {
+        mplayer.volume = mplayer.volume + 0.01;
+    }
+    player.volume = mplayer.volume;
+  //  recognizer.view.center=CGPointMake(recognizer.view.center.x+translation.x, recognizer.view.center.y+ translation.y);
+    
+    [recognizer setTranslation:CGPointMake(0, 0) inView:recognizer.view];
+    
+}
+
 - (void)randomButton:(id)sender {
     if (isRandom == YES) {
         isRandom = NO;
         NSUserDefaults *ud = [NSUserDefaults standardUserDefaults];
         [ud setBool:NO forKey:@"isRandom"];
         [ud synchronize];
-        [randomButton setImage:[UIImage imageNamed:@"rand.png"] forState:UIControlStateNormal];
+        [randomButton setAlpha:0.25];
     }
     else {
         isRandom = YES;
         NSUserDefaults *ud = [NSUserDefaults standardUserDefaults];
         [ud setBool:YES forKey:@"isRandom"];
         [ud synchronize];
-        [randomButton setImage:[UIImage imageNamed:@"random.png"] forState:UIControlStateNormal];
+        [randomButton setAlpha:0.7];
     }
 }
 
 - (void)repeatButton:(id)sender {
     if (loops == 0) {
         NSLog(@"2");
-        loops = -1;
-        player.numberOfLoops = loops;
+        loops = 1;
+        player.numberOfLoops = -1;
         NSUserDefaults *ud = [NSUserDefaults standardUserDefaults];
         NSString *strToUd = [NSString stringWithFormat:@"-1"];
         [ud setObject:strToUd forKey:@"isRepeat"];
         [ud synchronize];
-        [repeatButton setImage:[UIImage imageNamed:@"repeaton1.png"] forState:UIControlStateNormal];
+        [repeatButton setAlpha:0.7];
     }
     else if (loops == -1) {
         NSLog(@"3");
@@ -295,7 +474,7 @@
         NSString *strToUd = [NSString stringWithFormat:@"0"];
         [ud setObject:strToUd forKey:@"isRepeat"];
         [ud synchronize];
-        [repeatButton setImage:[UIImage imageNamed:@"repeat.png"] forState:UIControlStateNormal];
+        [repeatButton setAlpha:0.25];
     }
 }
 
@@ -318,9 +497,9 @@
         [self updateViewForPlayerState:player];
         songDictionary = [[notification userInfo] valueForKey:@"audioArray"];
         currentNumber = songNumber.intValue;
-        NSLog(@"%d, %d", songDictionary.count, songNumber.intValue);
+      //  NSLog(@"%d, %d", songDictionary.count, songNumber.intValue);
         NSDictionary *dict = [songDictionary objectAtIndex:currentNumber];
-        NSLog(@"dict = %@", dict);
+      //  NSLog(@"dict = %@", dict);
         NSString *name = [dict objectForKey:@"title"];
         name = [name stringByReplacingOccurrencesOfString:@"&#39;" withString:@"'"];
         name = [name stringByReplacingOccurrencesOfString:@"&#33;" withString:@"!"];
@@ -335,8 +514,10 @@
         [songArtistLabel setText:art];
         int numForLabel = currentNumber + 1;
         [songNumLabel setText:[NSString stringWithFormat:@"%d из %d", numForLabel, [songDictionary count]]];
+     
         NSString *authString = [NSString stringWithFormat:@"%@", [dict objectForKey:@"url"]];
         NSURL *authURL = [[NSURL alloc] initWithString:authString];
+        
         theRequest =
         [NSURLRequest requestWithURL:authURL
                          cachePolicy:NSURLRequestReloadIgnoringLocalCacheData
@@ -347,7 +528,7 @@
         if (theConnection) {
             rData = nil;
             rData = [NSMutableData data];
-        }
+        } 
     }
     
 }
@@ -356,10 +537,12 @@
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         NSManagedObject *managedObject = [self.fetchedResultsController objectAtIndexPath:[NSIndexPath indexPathForRow:songNumber inSection:0]];
         NSString *songPath = [[managedObject valueForKey:@"filepath"] description];
-        NSData *soundData = [[NSData alloc] initWithContentsOfFile:songPath];
-        NSLog(@"%d", soundData.length);
+      //  NSData *soundData = [[NSData alloc] initWithContentsOfFile:songPath];
+      //  NSLog(@"%d", soundData.length);
         player = nil;
-        player = [[AVAudioPlayer alloc] initWithData:[[NSData alloc] initWithContentsOfFile:songPath] error:nil];
+        NSURL *fileURL = [NSURL fileURLWithPath:songPath];
+        NSLog(@"%@", fileURL);
+        player = [[AVAudioPlayer alloc] initWithContentsOfURL:fileURL error:nil];
         [player setDelegate:self];
         if (loops == -1) {
             [player setNumberOfLoops:loops];
@@ -449,6 +632,23 @@
                 rData = [NSMutableData data];
             }
         }
+        CGRect screen = [[UIScreen mainScreen] bounds];
+        CGRect defRect1 = CGRectMake(20, screen.size.height/2 - 60, 280, 50);
+        CGRect defRect2 = CGRectMake(20, screen.size.height/2 - 10, 280, 40);
+        [UIView animateWithDuration:0.2 animations:^{
+            [songTitleLabel setFrame:CGRectMake(-defRect1.size.width - 10, defRect1.origin.y, defRect1.size.width, defRect1.size.height)];
+            [songArtistLabel setFrame:CGRectMake(-defRect2.size.width - 10, defRect2.origin.y, defRect2.size.width, defRect2.size.height)];
+            
+        }completion:^(BOOL finished){
+            [songTitleLabel setFrame:CGRectMake(self.view.frame.size.width + 10, defRect1.origin.y, defRect1.size.width, defRect1.size.height)];
+            [songArtistLabel setFrame:CGRectMake(self.view.frame.size.width + 10, defRect2.origin.y, defRect2.size.width, defRect2.size.height)];
+            [UIView animateWithDuration:0.2 animations:^{
+                [songTitleLabel setFrame:CGRectMake(defRect1.origin.x, defRect1.origin.y, defRect1.size.width, defRect1.size.height)];
+                [songArtistLabel setFrame:CGRectMake(defRect2.origin.x, defRect2.origin.y, defRect2.size.width, defRect2.size.height)];
+            }completion:^(BOOL finished){
+                
+            }];
+        }];
     }
     NSLog(@"rewind called");
 }
@@ -457,6 +657,22 @@
     [player stop];
     player = nil;
     [self audioPlayerDidFinishPlaying:player successfully:YES];
+    CGRect screen = [[UIScreen mainScreen] bounds];
+    CGRect defRect1 = CGRectMake(20, screen.size.height/2 - 60, 280, 50);
+    CGRect defRect2 = CGRectMake(20, screen.size.height/2 - 10, 280, 40);
+    [UIView animateWithDuration:0.2 animations:^{
+        [songTitleLabel setFrame:CGRectMake(self.view.frame.size.width + 10, defRect1.origin.y, defRect1.size.width, defRect1.size.height)];
+        [songArtistLabel setFrame:CGRectMake(self.view.frame.size.width + 10, defRect2.origin.y, defRect2.size.width, defRect2.size.height)];
+    }completion:^(BOOL finished){
+        [songTitleLabel setFrame:CGRectMake(-defRect1.size.width - 10, defRect1.origin.y, defRect1.size.width, defRect1.size.height)];
+        [songArtistLabel setFrame:CGRectMake(-defRect2.size.width - 10, defRect2.origin.y, defRect2.size.width, defRect2.size.height)];
+        [UIView animateWithDuration:0.2 animations:^{
+            [songTitleLabel setFrame:CGRectMake(defRect1.origin.x, defRect1.origin.y, defRect1.size.width, defRect1.size.height)];
+            [songArtistLabel setFrame:CGRectMake(defRect2.origin.x, defRect2.origin.y, defRect2.size.width, defRect2.size.height)];
+        }completion:^(BOOL finished){
+            
+        }];
+    }];
     NSLog(@"Fwd");
 }
 
@@ -646,8 +862,11 @@
 
 -(void)updateCurrentTimeForPlayer:(AVAudioPlayer *)p
 {
-	songTime.text = [NSString stringWithFormat:@"%d:%02d", (int)p.currentTime / 60, (int)p.currentTime % 60, nil];
+	songTime.text = [NSString stringWithFormat:@"%d:%02d /", (int)p.currentTime / 60, (int)p.currentTime % 60, nil];
 	[progressSlider setValue:p.currentTime animated:YES];
+    
+    circleView.percent = (p.currentTime / p.duration) * 100;
+   [circleView setNeedsDisplay];
 }
 
 - (void)updateCurrentTime
@@ -772,7 +991,8 @@
 	songTimeLeft.text = [NSString stringWithFormat:@"%d:%02d", (int)p.duration / 60, (int)p.duration % 60, nil];
 	progressSlider.maximumValue = p.duration;
     progressSlider.minimumValue = 0.0f;
-	p.volume = volumeSlider.value;
+//	p.volume = volumeSlider.value;
+    p.volume = mplayer.volume;
 }
 
 - (void)setInBackgroundFlag
@@ -800,7 +1020,7 @@
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
 {
     [rData appendData:data];
-    NSLog(@"rData updated");
+  //  NSLog(@"rData updated");
     float r = [rData length];
     if (r <= rLenght) {
         NSNumber *prsnt = [NSNumber numberWithFloat: (r/rLenght) * 100];
@@ -830,9 +1050,23 @@
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection
 {
+    NSLog(@"finished");
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         player = nil;
-        player = [[AVAudioPlayer alloc] initWithData:rData error:nil];
+        NSError *e = nil;
+        player = [[AVAudioPlayer alloc] initWithData:rData error:&e];
+        NSLog(@"settings %@", player.settings);
+        
+        if (player == nil) {
+            NSLog(@"extra method");
+            NSString *docDirPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+            NSString *filePath = [NSString stringWithFormat:@"%@/temp.mp3", docDirPath];
+            [rData writeToFile:filePath atomically:YES];
+            
+            NSError *error;
+            NSURL *fileURL = [NSURL fileURLWithPath:filePath];
+            player = [[AVAudioPlayer alloc] initWithContentsOfURL:fileURL error:&error];
+        }
         
         [player setDelegate:self];
         if (loops == -1) {
@@ -881,6 +1115,7 @@
                                                                       inManagedObjectContext:context];
     NSString *randomUUID = [self GetUUID];
     NSLog(@"%@", randomUUID);
+    randomUUID = [randomUUID stringByAppendingPathExtension:@"mp3"];
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *documentsDirectory = [paths objectAtIndex:0];
     NSString *filePath = [documentsDirectory stringByAppendingPathComponent:randomUUID];
