@@ -129,7 +129,6 @@ const CGFloat kGHRevealSidebarFlickVelocity = 1000.0f;
 
 #pragma mark Public Methods
 - (void)dragContentView:(UIPanGestureRecognizer *)panGesture {
-    NSLog(@"react");
 	CGFloat translation = [panGesture translationInView:self.view].x;
 	if (panGesture.state == UIGestureRecognizerStateChanged) {
 		if (sidebarShowing) {

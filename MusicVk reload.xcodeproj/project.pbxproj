@@ -44,6 +44,7 @@
 		63795410175A6AAC0048EBA0 /* navnew.png in Resources */ = {isa = PBXBuildFile; fileRef = 6379540E175A6AAC0048EBA0 /* navnew.png */; };
 		63795411175A6AAC0048EBA0 /* navnew@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6379540F175A6AAC0048EBA0 /* navnew@2x.png */; };
 		63795413175A6B030048EBA0 /* bg8.png in Resources */ = {isa = PBXBuildFile; fileRef = 63795412175A6B030048EBA0 /* bg8.png */; };
+		63795416175E5C3D0048EBA0 /* PlayListView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63795415175E5C3D0048EBA0 /* PlayListView.m */; };
 		639CC36316C6740B0053223E /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 639CC36216C6740B0053223E /* UIKit.framework */; };
 		639CC36516C6740B0053223E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 639CC36416C6740B0053223E /* Foundation.framework */; };
 		639CC36716C6740B0053223E /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 639CC36616C6740B0053223E /* CoreGraphics.framework */; };
@@ -169,6 +170,8 @@
 		6379540E175A6AAC0048EBA0 /* navnew.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = navnew.png; sourceTree = "<group>"; };
 		6379540F175A6AAC0048EBA0 /* navnew@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "navnew@2x.png"; sourceTree = "<group>"; };
 		63795412175A6B030048EBA0 /* bg8.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bg8.png; sourceTree = "<group>"; };
+		63795414175E5C3D0048EBA0 /* PlayListView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayListView.h; sourceTree = "<group>"; };
+		63795415175E5C3D0048EBA0 /* PlayListView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayListView.m; sourceTree = "<group>"; };
 		639CC35F16C6740B0053223E /* MusicVk reload.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "MusicVk reload.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		639CC36216C6740B0053223E /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		639CC36416C6740B0053223E /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -365,6 +368,8 @@
 				63795408175A2AB20048EBA0 /* DirectionPanGestureRecognizer.m */,
 				639CC39916C677F40053223E /* NavController.h */,
 				639CC39A16C677F40053223E /* NavController.m */,
+				63795414175E5C3D0048EBA0 /* PlayListView.h */,
+				63795415175E5C3D0048EBA0 /* PlayListView.m */,
 				639CC3F116C7FE5D0053223E /* PlayerViewController.h */,
 				639CC3F216C7FE5D0053223E /* PlayerViewController.m */,
 				639CC37116C6740B0053223E /* AppDelegate.h */,
@@ -674,6 +679,7 @@
 				639CC44316CA8D090053223E /* customNSURLConnection.m in Sources */,
 				637953FA1759FE3D0048EBA0 /* circle.m in Sources */,
 				63795409175A2AB20048EBA0 /* DirectionPanGestureRecognizer.m in Sources */,
+				63795416175E5C3D0048EBA0 /* PlayListView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

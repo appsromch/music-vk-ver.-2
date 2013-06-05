@@ -7,13 +7,11 @@
 //
 
 #import "PlayerViewController.h"
-
 #import <QuartzCore/QuartzCore.h>
 #import <AudioToolbox/AudioToolbox.h>
 #import "DirectionPanGestureRecognizer.h"
 
 @interface PlayerViewController ()
-
 @end
 
 @implementation PlayerViewController
@@ -75,10 +73,10 @@
     NSUserDefaults *ud = [NSUserDefaults standardUserDefaults];
     [self.view setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:[ud objectForKey:@"bgPic"]]]];
     circleView = [[circle alloc] initWithFrame:self.view.bounds];
-    //[m_testView setAlpha:0.3];
     circleView.percent = 100;
     
     CGRect screen = [[UIScreen mainScreen] bounds];
+        
     songTitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(20, screen.size.height/2 - 60, 280, 50)];
     songArtistLabel = [[UILabel alloc] initWithFrame:CGRectMake(20, screen.size.height/2 - 10, 280, 40)];
     
@@ -142,11 +140,17 @@
     [playButton addTarget:self action:@selector(didGetPlayerPlay) forControlEvents:UIControlEventTouchUpInside];
     
     UISwipeGestureRecognizer *fwd = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(didGetPlayerFwd)];
+    [fwd setDelegate:self];
     fwd.direction = UISwipeGestureRecognizerDirectionRight;
     [self.view addGestureRecognizer:fwd];
     UISwipeGestureRecognizer *rwd = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(didGetPlayerRwd)];
+    [rwd setDelegate:self];
     rwd.direction = UISwipeGestureRecognizerDirectionLeft;
     [self.view addGestureRecognizer:rwd];
+    
+    UILongPressGestureRecognizer *progressTap = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(progressTapFunc:)];
+    [progressTap setMinimumPressDuration:0.5];
+    [self.view addGestureRecognizer:progressTap];
     
     repeatButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [repeatButton setFrame:CGRectMake(screen.size.width - 94, 5, 40, 32)];
@@ -165,6 +169,18 @@
     [settings setImage:[UIImage imageNamed:@"set.png"] forState:UIControlStateNormal];
     [settings setAlpha:0.25];
     [settings addTarget:self action:@selector(settingsFunc) forControlEvents:UIControlEventTouchUpInside];
+    
+    progressSlider = [[UISlider alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 30)];
+    [progressSlider setBackgroundColor:[UIColor clearColor]];
+    [progressSlider setMinimumTrackTintColor:[UIColor colorWithRed:180/255.0f green:180/255.0f blue:180/255.0f alpha:1]];
+    [progressSlider addTarget:self action:@selector(progressSliderMoved:) forControlEvents:UIControlEventValueChanged];
+    [progressSlider setMaximumTrackTintColor:[UIColor colorWithWhite:0.1 alpha:1]];
+    [progressSlider setThumbImage:[UIImage imageNamed:@"volumepointer.png"] forState:UIControlStateNormal];
+    [progressSlider setThumbImage:[UIImage imageNamed:@"volumepointer.png"] forState:UIControlStateHighlighted];
+    
+    settingsView = [[UIView alloc] initWithFrame:CGRectMake(0, -self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height - 60)];
+    [settingsView setBackgroundColor:[UIColor colorWithWhite:0 alpha:0.85]];
+    //[settingsView setAlpha:0];
     
     NSString *strRepeat = [ud objectForKey:@"isRepeat"];
     isRandom = [ud boolForKey:@"isRandom"];
@@ -361,7 +377,7 @@
     [self.view addSubview:repeatButton];
     [self.view addSubview:randomButton];
     [self.view addSubview:saveButton];
-    UIButton *buttonBack = [UIButton buttonWithType:UIButtonTypeCustom];
+        UIButton *buttonBack = [UIButton buttonWithType:UIButtonTypeCustom];
     [buttonBack setFrame:CGRectMake(10, 7, 50, 30)];
     [buttonBack setAlpha:0.2];
    // [buttonBack setImage:[UIImage imageNamed:@"newback2.png"] forState:UIControlStateNormal];
@@ -372,6 +388,33 @@
     [buttonBack setShowsTouchWhenHighlighted:NO];
     [self.view addSubview:buttonBack];
     //  [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"playerNavBg.png"] forBarMetrics:UIBarMetricsDefault];
+  UIButton *vPL = [self makeSettingsButtonWithTitle:@"Добавить в плейлист" andFrame:CGRectMake(0, 40, self.view.frame.size.width, 50)];
+    [vPL addTarget:self action:@selector(addToPlaylistFunc) forControlEvents:UIControlEventTouchUpInside];
+    [settingsView addSubview:vPL];
+    
+    UIButton *chngTheme = [self makeSettingsButtonWithTitle:@"Изменить тему" andFrame:CGRectMake(0, 100, self.view.frame.size.width, 50)];
+    [chngTheme addTarget:self action:@selector(changeThemeFunc) forControlEvents:UIControlEventTouchUpInside];
+    [settingsView addSubview:chngTheme];
+    
+    UIButton *randTheme = [self makeSettingsButtonWithTitle:@"Случайная тема" andFrame:CGRectMake(0, 160, self.view.frame.size.width, 50)];
+    [randTheme addTarget:self action:@selector(randThemeFunc) forControlEvents:UIControlEventTouchUpInside];
+    [settingsView addSubview:randTheme];
+    
+    UIButton *showControls = [self makeSettingsButtonWithTitle:@"Управление" andFrame:CGRectMake(0, 220, self.view.frame.size.width, 50)];
+    [showControls addTarget:self action:@selector(showControlsFunc) forControlEvents:UIControlEventTouchUpInside];
+    [settingsView addSubview:showControls];
+    
+    UIButton *share = [self makeSettingsButtonWithTitle:@"Поделиться" andFrame:CGRectMake(0, 280, self.view.frame.size.width, 50)];
+    [share addTarget:self action:@selector(shareFunc) forControlEvents:UIControlEventTouchUpInside];
+    [settingsView addSubview:share];
+    
+    UIButton *rate = [self makeSettingsButtonWithTitle:@"Оценить" andFrame:CGRectMake(0, 340, self.view.frame.size.width, 50)];
+    [rate addTarget:self action:@selector(rateFunc) forControlEvents:UIControlEventTouchUpInside];
+    [settingsView addSubview:vPL];
+    
+    UIButton *removeAds = [self makeSettingsButtonWithTitle:@"Убрать рекламу" andFrame:CGRectMake(0, 400, self.view.frame.size.width, 50)];
+    [removeAds addTarget:self action:@selector(removeAdsFunc) forControlEvents:UIControlEventTouchUpInside];
+    [settingsView addSubview:vPL];
     
     DirectionPanGestureRecognizer *volume = [[DirectionPanGestureRecognizer alloc] initWithTarget:self action:@selector(handleVolume:)];
     volume.direction = DirectionPanGestureRecognizerHorizontal;
@@ -382,6 +425,17 @@
     [self.view addSubview:volumeView];
     [volumeView addGestureRecognizer:volume];
      [self.view addSubview:settings];
+    [self.view addSubview:settingsView];
+}
+
+- (UIButton *)makeSettingsButtonWithTitle: (NSString *) name andFrame: (CGRect) rect {
+    UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
+    [button setFrame:rect];
+    [button setTitle:name forState:UIControlStateNormal];
+    [button setTitleColor:[UIColor colorWithWhite:1 alpha:0.6] forState:UIControlStateNormal];
+    [button setTitleColor:[UIColor colorWithWhite:1 alpha:1] forState:UIControlStateHighlighted];
+    [button.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Light" size:18]];
+    return button;
 }
 
 - (void) addToView {
@@ -401,14 +455,25 @@
 }
 
 - (void) settingsFunc {
-    NSArray *arr = [NSArray arrayWithObjects:@"playerbg1.jpg", @"playerbg2.jpg", @"playerbg3.jpg", @"playerbg4.jpg", @"playerbg5.jpg", nil];
-    int randNum = arc4random_uniform(5);
-    [self.view setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:[arr objectAtIndex:randNum]]]];
-    NSUserDefaults *ud = [NSUserDefaults standardUserDefaults];
-    [ud setValue:[arr objectAtIndex:randNum] forKey:@"bgPic"];
-    [ud synchronize];
-    NSLog(@"settings");
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"newBg" object:nil];
+    if (settingsView.frame.origin.y != 0){
+        for (UIGestureRecognizer *grec in self.view.gestureRecognizers) {
+            [grec setEnabled:NO];
+        }
+        [UIView animateWithDuration:0.3 animations:^{
+           // [settingsView setAlpha:1];
+            [settingsView setFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height - 60)];
+        }];
+    }
+    else {
+        for (UIGestureRecognizer *grec in self.view.gestureRecognizers) {
+            [grec setEnabled:YES];
+        }
+        [UIView animateWithDuration:0.3 animations:^{
+          //  [settingsView setAlpha:0];
+            [settingsView setFrame:CGRectMake(0, -self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height - 60)];
+        }];
+    }
+
 }
 
 - (void)handleVolume:(UIPanGestureRecognizer*)recognizer {
@@ -853,9 +918,21 @@
     mplayer.volume = [sender value];
 }
 
+- (void) progressTapFunc: (UIGestureRecognizer *) grec {
+    [grec setEnabled:NO];
+    CGPoint location = [grec locationInView:grec.view];
+    [progressSlider setFrame:CGRectMake(0, location.y, self.view.frame.size.width, 30)];
+    [self.view addSubview:progressSlider];
+}
+
 - (void)progressSliderMoved:(UISlider *)sender
 {
     NSLog(@"moved slider %f", sender.value);
+	player.currentTime = sender.value;
+	[self updateCurrentTimeForPlayer:player];
+}
+
+- (void)updateProgress:(UISlider *)sender {
 	player.currentTime = sender.value;
 	[self updateCurrentTimeForPlayer:player];
 }
@@ -866,7 +943,7 @@
 	[progressSlider setValue:p.currentTime animated:YES];
     
     circleView.percent = (p.currentTime / p.duration) * 100;
-   [circleView setNeedsDisplay];
+    [circleView setNeedsDisplay];
 }
 
 - (void)updateCurrentTime
@@ -1152,6 +1229,43 @@
 - (void) saveFunc {
     NSDictionary *dict = [songDictionary objectAtIndex:currentNumber];
     [self insertNewObject:rData withTitle:[dict objectForKey:@"title"] andArtist:[dict objectForKey:@"artist"]];
+}
+
+#pragma mark settings functions
+
+- (void) addToPlaylistFunc {
+    
+}
+
+- (void) changeThemeFunc {
+    
+}
+
+- (void) randThemeFunc {
+    NSArray *arr = [NSArray arrayWithObjects:@"playerbg1.jpg", @"playerbg2.jpg", @"playerbg3.jpg", @"playerbg4.jpg", @"playerbg5.jpg", nil];
+    int randNum = arc4random_uniform(5);
+    [self.view setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:[arr objectAtIndex:randNum]]]];
+    NSUserDefaults *ud = [NSUserDefaults standardUserDefaults];
+    [ud setValue:[arr objectAtIndex:randNum] forKey:@"bgPic"];
+    [ud synchronize];
+    NSLog(@"settings");
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"newBg" object:nil];
+}
+
+- (void) showControlsFunc {
+    
+}
+
+- (void) rateFunc {
+    
+}
+
+- (void) removeAdsFunc {
+    
+}
+
+- (void) shareFunc {
+    
 }
 
 @end

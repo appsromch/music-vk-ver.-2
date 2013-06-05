@@ -14,6 +14,7 @@
 #import "NavController.h"
 #import "ViewController.h"
 #import "PlayerViewController.h"
+#import "PlayListView.h"
 #import "VkAudioViewController.h"
 
 #pragma mark -
@@ -53,7 +54,7 @@
 	NSArray *controllers = @[
                           @[
                               [[NavController alloc] initWithRootViewController:[[GHRootViewController alloc] initWithTitle:@"Сохраненные" withRevealBlock:revealBlock andManagedObject:self.managedObjectContext]],
-                              [[NavController alloc] initWithRootViewController:[[GHRootViewController alloc] initWithTitle:@"Плейлисты" withRevealBlock:revealBlock andManagedObject:self.managedObjectContext]],
+                              [[NavController alloc] initWithRootViewController:[[PlayListView alloc] initWithTitle:@"Плейлисты" withRevealBlock:revealBlock andManagedObject:self.managedObjectContext]],
                               [[NavController alloc] initWithRootViewController:[[GHRootViewController alloc] initWithTitle:@"Настройки" withRevealBlock:revealBlock andManagedObject:self.managedObjectContext]],
                               ],
                           @[
@@ -85,7 +86,8 @@
 			UIPanGestureRecognizer *panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self.revealController
 																						 action:@selector(dragContentView:)];
 			panGesture.cancelsTouchesInView = YES;
-			[((UINavigationController *)obj2).navigationBar addGestureRecognizer:panGesture];
+			//[((UINavigationController *)obj2).navigationBar addGestureRecognizer:panGesture];
+            [((UINavigationController *)obj2).view addGestureRecognizer:panGesture];
 		}];
 	}];
       

@@ -14,7 +14,7 @@
 #import <MediaPlayer/MediaPlayer.h>
 #import "circle.h"
 
-@interface PlayerViewController : UIViewController <NSFetchedResultsControllerDelegate, AVAudioPlayerDelegate, AVAudioSessionDelegate, NSURLConnectionDelegate> {
+@interface PlayerViewController : UIViewController <NSFetchedResultsControllerDelegate, AVAudioPlayerDelegate, AVAudioSessionDelegate, NSURLConnectionDelegate, UIGestureRecognizerDelegate> {
     MPMusicPlayerController *mplayer;
     AVAudioPlayer *player;
     RevealBlock _revealBlock;
@@ -48,6 +48,7 @@
     float rLenght;
     circle *circleView;
     UIView *back;
+    UIView *settingsView;
 }
 
 @property (nonatomic, retain) NSMutableArray *songDictionary;

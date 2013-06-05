@@ -133,7 +133,7 @@
     [note addSubview:songTitle];
     
     playpause = [UIButton buttonWithType:UIButtonTypeCustom];
-    [playpause setFrame:CGRectMake(5, 0, 40, 44)];
+    [playpause setFrame:CGRectMake(5, 0, 40, 40)];
     [playpause setBackgroundColor:[UIColor clearColor]];
     [playpause setImage:[UIImage imageNamed:@"play.png"] forState:UIControlStateNormal];
     [playpause setImageEdgeInsets:UIEdgeInsetsMake(12, 10, 10, 10)];

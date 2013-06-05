@@ -36,7 +36,7 @@
         [buttonBack addTarget:self action:@selector(revealSidebar) forControlEvents:UIControlEventTouchUpInside];
         [buttonBack setImage:[UIImage imageNamed:@"menu2pressed.png"] forState:UIControlStateHighlighted];
         [buttonBack setShowsTouchWhenHighlighted:NO];
-        UIBarButtonItem *backButton = [[UIBarButtonItem alloc]
+                UIBarButtonItem *backButton = [[UIBarButtonItem alloc]
                                        initWithCustomView:buttonBack];
         [self.navigationItem setLeftBarButtonItem: backButton];
         UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -48,6 +48,7 @@
         [rightButton setTitleColor:[UIColor colorWithWhite:0.1 alpha:1] forState:UIControlStateHighlighted];
         [rightButton.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Light" size:18]];
         [rightButton.titleLabel setTextAlignment:NSTextAlignmentRight];
+        [rightButton addTarget:self action:@selector(editFunc:) forControlEvents:UIControlEventTouchUpInside];
         [rightButton setEnabled:NO];
         UIBarButtonItem *rightBarButton = [[UIBarButtonItem alloc] initWithCustomView:rightButton];
         [self.navigationItem setRightBarButtonItem:rightBarButton];
@@ -98,6 +99,16 @@
         }
     }
     [self performSelector:@selector(settable) withObject:nil afterDelay:0.1];
+}
+
+- (void) editFunc: (UIButton *) button {
+    if (table.editing == NO) {
+        [table setEditing:YES animated:YES];
+        [button setTitle:@"Готово" forState:UIControlStateNormal];
+    }
+    else { [table setEditing:NO animated:YES];
+        [button setTitle:@"Сохраненные" forState:UIControlStateNormal];
+    }
 }
 
 - (void) settable {
@@ -166,7 +177,7 @@
 }
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
-    return NO;
+    return YES;
 }
 
 - (void)tableView:(UITableView *)tableView willBeginEditingRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -307,6 +318,22 @@
     [allSongsLabel setText:[NSString stringWithFormat:@"Всего песен: %d", [[self.fetchedResultsController fetchedObjects] count]]];
 }
 
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
+    NSLog(@"%d", indexPath.row);
+    
+    NSManagedObject *managedObject = [self.fetchedResultsController objectAtIndexPath:indexPath];
+    
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    NSString *filePath = [documentsDirectory stringByAppendingPathComponent:[[managedObject valueForKey:@"filepath"]description]];
+    NSFileManager *manager = [NSFileManager defaultManager];
+    NSError *error;
+    [manager removeItemAtPath:filePath error:&error];
+    if (error != nil) NSLog(@"error = %@", error);
+  //  [[self.fetchedResultsController managedObjectContext] deleteObject:managedObject];
+    [self saveContext];
+}
+
 - (void)configureCell:(UITableViewCell *)cell atIndexPath:(NSIndexPath *)indexPath
 {
     NSManagedObject *managedObject = [self.fetchedResultsController objectAtIndexPath:indexPath];
@@ -319,19 +346,6 @@
     [cell.detailTextLabel setFont:[UIFont fontWithName:@"Helvetica-Light" size:12]];
     [cell.detailTextLabel setTextColor:[UIColor colorWithWhite:1 alpha:0.7]];
     [cell.detailTextLabel setBackgroundColor:[UIColor clearColor]];
-}
-
-- (void)insertNewObject
-{
-    NSManagedObjectContext *context = [self.fetchedResultsController managedObjectContext];
-    NSEntityDescription *entity = [[self.fetchedResultsController fetchRequest] entity];
-    NSManagedObject *newManagedObject = [NSEntityDescription insertNewObjectForEntityForName:[entity name]
-                                                                      inManagedObjectContext:context];
-    
-    [newManagedObject setValue:[NSDate date] forKey:@"timeStamp"];
-    [newManagedObject setValue:@"iMaladec" forKey:@"note"];
-    
-    [self saveContext];
 }
 
 - (void)saveContext {
