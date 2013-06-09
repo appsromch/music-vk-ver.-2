@@ -109,7 +109,7 @@
     [note addTarget:self action:@selector(noteButtonFunc) forControlEvents:UIControlEventTouchUpInside];
     [view addSubview:note];
     
-    songArtist = [[UILabel alloc] initWithFrame:CGRectMake(25, 92, 150, 22)];
+    songArtist = [[UILabel alloc] initWithFrame:CGRectMake(25, 92, 200, 22)];
     [songArtist setBackgroundColor:[UIColor clearColor]];
     [songArtist setFont:[UIFont fontWithName:@"Helvetica-Bold" size:14]];
     [songArtist setTextAlignment:NSTextAlignmentLeft];

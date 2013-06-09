@@ -11,12 +11,14 @@
 
 typedef void (^RevealBlock)();
 
-@interface GHRootViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, NSURLConnectionDelegate, NSFetchedResultsControllerDelegate> {
+@interface GHRootViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, NSURLConnectionDelegate, NSFetchedResultsControllerDelegate, UISearchBarDelegate, UISearchDisplayDelegate> {
 @private
 	RevealBlock _revealBlock;
     UITableView *table;
     ODRefreshControl *refreshControl;
     NSMutableData *rData;
+    BOOL searching;
+    NSMutableArray *filteredArray;
     UILabel *allSongsLabel;
 }
 

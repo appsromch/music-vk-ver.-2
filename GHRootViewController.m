@@ -7,12 +7,14 @@
 
 #import "GHRootViewController.h"
 #import "GHPushedViewController.h"
+#import "customSearchBar.h"
 #import "vkLogin.h"
 #import "PlayerViewController.h"
 
 #pragma mark -
 #pragma mark Private Interface
 @interface GHRootViewController ()
+@property customSearchBar *searchBar;
 - (void)pushViewController;
 - (void)revealSidebar;
 @end
@@ -22,7 +24,7 @@
 #pragma mark Implementation
 @implementation GHRootViewController
 @synthesize managedObjectContext;
-@synthesize fetchedResultsController;
+@synthesize fetchedResultsController, searchBar;
 
 #pragma mark Memory Management
 - (id)initWithTitle:(NSString *)title withRevealBlock:(RevealBlock)revealBlock andManagedObject:(NSManagedObjectContext *)managedObjectC {
@@ -49,6 +51,7 @@
         [rightButton.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Light" size:18]];
         [rightButton.titleLabel setTextAlignment:NSTextAlignmentRight];
         [rightButton addTarget:self action:@selector(editFunc:) forControlEvents:UIControlEventTouchUpInside];
+        searching = NO;
         [rightButton setEnabled:NO];
         UIBarButtonItem *rightBarButton = [[UIBarButtonItem alloc] initWithCustomView:rightButton];
         [self.navigationItem setRightBarButtonItem:rightBarButton];
@@ -64,7 +67,6 @@
     table = [[UITableView alloc] init];
     [table setDelegate:self];
     [table setDataSource:self];
-    //[table setBackgroundColor:[UIColor colorWithWhite:0.92 alpha:1]];
     [table setBackgroundColor:[UIColor clearColor]];
     [table setSeparatorColor:[UIColor colorWithWhite:0 alpha:0.05]];
     allSongsLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 18)];
@@ -73,8 +75,16 @@
     [allSongsLabel setTextColor:[UIColor colorWithWhite:0.75 alpha:1]];
     [allSongsLabel setFont:[UIFont fontWithName:@"Helvetica-Light" size:12]];
     [table setTableFooterView:allSongsLabel];
-    refreshControl = [[ODRefreshControl alloc] initInScrollView:table];
-    [refreshControl addTarget:self action:@selector(dropViewPulled) forControlEvents:UIControlEventValueChanged];
+    
+    searchBar = [[customSearchBar alloc] initWithFrame:CGRectMake(0, 0, 320, 40)];
+    searchBar.delegate = self;
+    table.tableHeaderView = searchBar;
+    
+    [table setContentOffset:CGPointMake(0,30)];
+  //  refreshControl = [[ODRefreshControl alloc] initInScrollView:table];
+  //  [refreshControl addTarget:self action:@selector(dropViewPulled) forControlEvents:UIControlEventValueChanged];
+    
+    filteredArray = [[NSMutableArray alloc] init];
     
     NSUserDefaults *ud = [NSUserDefaults standardUserDefaults];
     NSString *token = [ud objectForKey:@"token"];
@@ -156,10 +166,8 @@
    
     if(textRange.location != NSNotFound)
     {
-        // AuthViewController *authView = [[AuthViewController alloc] initWithHidden:YES];
         vkLogin *vk = [[vkLogin alloc] init];
         [self presentViewController:vk animated:NO completion:nil];
-        //Does contain the substring
     }
     
 }
@@ -185,10 +193,13 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-
-    id <NSFetchedResultsSectionInfo> sectionInfo = [[self.fetchedResultsController sections] objectAtIndex:section];
-    [allSongsLabel setText:[NSString stringWithFormat:@"Всего песен: %d", [sectionInfo numberOfObjects]]];
-    return [sectionInfo numberOfObjects];
+    if (searching)
+        return [filteredArray count];
+    else {
+        id <NSFetchedResultsSectionInfo> sectionInfo = [[self.fetchedResultsController sections] objectAtIndex:section];
+        [allSongsLabel setText:[NSString stringWithFormat:@"Всего песен: %d", [sectionInfo numberOfObjects]]];
+        return [sectionInfo numberOfObjects];
+    }
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -196,53 +207,16 @@
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:SimpleTableIdentifier];
     if (cell == nil) {
         cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:SimpleTableIdentifier];
-        //[cell.contentView setBackgroundColor:[UIColor colorWithWhite:0.98 alpha:1]];
         [cell.contentView setBackgroundColor:[UIColor clearColor]];
-        
-      //  UIView *line = [[UIView alloc] initWithFrame:CGRectMake(0, 0, cell.frame.size.width, 1)];
-      //  [line setBackgroundColor:[UIColor whiteColor]];
-      //  [cell.contentView addSubview:line];
     }
     [self configureCell:cell atIndexPath:indexPath];
     return cell;
     
 }
 
-- (void)cellSwiped:(UIGestureRecognizer *)gestureRecognizer {
-    if (gestureRecognizer.state == UIGestureRecognizerStateEnded) {
-        UITableViewCell *cell = (UITableViewCell *)gestureRecognizer.view;
-        if (cell.contentView.subviews.count == 0) {
-            UIView *view = [[UIView alloc] initWithFrame:CGRectMake(320, 0, 0, 44)];
-            [view setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"cellAction.png"]]];
-            [cell.contentView addSubview:view];
-            
-            UIButton *saveButton = [UIButton buttonWithType:UIButtonTypeCustom];
-            [saveButton setFrame:CGRectMake(100, 2, 40, 40)];
-            [saveButton setImage:[UIImage imageNamed:@"cellSave.png"] forState:UIControlStateNormal];
-            [saveButton addTarget:self action:@selector(saveFunc) forControlEvents:UIControlEventTouchUpInside];
-            [saveButton setShowsTouchWhenHighlighted:YES];
-            [view addSubview:saveButton];
-            
-            UIButton *playButton = [UIButton buttonWithType:UIButtonTypeCustom];
-            [playButton setFrame:CGRectMake(50, 2, 40, 40)];
-            [playButton setImage:[UIImage imageNamed:@"cellPlay.png"] forState:UIControlStateNormal];
-            [playButton addTarget:self action:@selector(playFunc) forControlEvents:UIControlEventTouchUpInside];
-            [playButton setShowsTouchWhenHighlighted:YES];
-            [view addSubview:playButton];
-            
-            [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
-            
-            [UIView animateWithDuration:0.5 animations:^{
-                [view setFrame:CGRectMake(170, 0, 150, 44)];
-            }];
-        }
-        //..
-    }
-}
-
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     NSLog(@"selected cell at %@", indexPath);
-    UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+/*    UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
     if (cell.contentView.subviews.count > 0) {
         UIView *view = [cell.contentView.subviews objectAtIndex:0];
         [UIView animateWithDuration:0.5 animations:^{
@@ -251,23 +225,25 @@
             [view removeFromSuperview];
             [cell setSelectionStyle:UITableViewCellSelectionStyleBlue];
         }];
+    } */
+    if (searching) {
+        NSInteger numbr = [self.fetchedResultsController.fetchedObjects indexOfObject:[filteredArray objectAtIndex:indexPath.row]];
+        [[NSUserDefaults standardUserDefaults] setObject:@"saved" forKey:@"window"];
+        [[NSUserDefaults standardUserDefaults] setObject:[NSString stringWithFormat:@"%d", numbr] forKey:@"songNumber"];
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"openPlayer" object:nil];
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"newSong" object:nil];
+        [tableView deselectRowAtIndexPath:indexPath animated:YES];
     }
+    else {
     [[NSUserDefaults standardUserDefaults] setObject:@"saved" forKey:@"window"];
     [[NSUserDefaults standardUserDefaults] setObject:[NSString stringWithFormat:@"%d", indexPath.row] forKey:@"songNumber"];
     [[NSNotificationCenter defaultCenter] postNotificationName:@"openPlayer" object:nil];
     [[NSNotificationCenter defaultCenter] postNotificationName:@"newSong" object:nil];
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    }
 }
 
 #pragma mark music methods
-
-- (void) saveFunc {
-    
-}
-
-- (void) playFunc {
-    
-}
 
 #pragma mark - Fetched results controller
 
@@ -311,41 +287,52 @@
     
     return fetchedResultsController;
 }
+
  
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller  {
  // In the simplest, most efficient, case, reload the table view.
+  
     [table reloadData];
     [allSongsLabel setText:[NSString stringWithFormat:@"Всего песен: %d", [[self.fetchedResultsController fetchedObjects] count]]];
 }
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
     NSLog(@"%d", indexPath.row);
-    
     NSManagedObject *managedObject = [self.fetchedResultsController objectAtIndexPath:indexPath];
-    
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *documentsDirectory = [paths objectAtIndex:0];
-    NSString *filePath = [documentsDirectory stringByAppendingPathComponent:[[managedObject valueForKey:@"filepath"]description]];
     NSFileManager *manager = [NSFileManager defaultManager];
     NSError *error;
-    [manager removeItemAtPath:filePath error:&error];
+    [manager removeItemAtPath:[[managedObject valueForKey:@"filepath"]description] error:&error];
     if (error != nil) NSLog(@"error = %@", error);
-  //  [[self.fetchedResultsController managedObjectContext] deleteObject:managedObject];
+    [[self.fetchedResultsController managedObjectContext] deleteObject:managedObject];
     [self saveContext];
 }
 
 - (void)configureCell:(UITableViewCell *)cell atIndexPath:(NSIndexPath *)indexPath
 {
-    NSManagedObject *managedObject = [self.fetchedResultsController objectAtIndexPath:indexPath];
-    cell.textLabel.text = [[managedObject valueForKey:@"title"] description];
-  //  [cell.textLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:15]];
-    [cell.textLabel setFont:[UIFont fontWithName:@"Helvetica-Light" size:16]];
-    [cell.textLabel setTextColor:[UIColor whiteColor]];
-    [cell.textLabel setBackgroundColor:[UIColor clearColor]];
-    cell.detailTextLabel.text = [[managedObject valueForKey:@"artist"] description];
-    [cell.detailTextLabel setFont:[UIFont fontWithName:@"Helvetica-Light" size:12]];
-    [cell.detailTextLabel setTextColor:[UIColor colorWithWhite:1 alpha:0.7]];
-    [cell.detailTextLabel setBackgroundColor:[UIColor clearColor]];
+    if (searching) {
+        NSManagedObject *managedObject = [filteredArray objectAtIndex:indexPath.row];
+        cell.textLabel.text = [[managedObject valueForKey:@"title"] description];
+        //  [cell.textLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:15]];
+        [cell.textLabel setFont:[UIFont fontWithName:@"Helvetica-Light" size:16]];
+        [cell.textLabel setTextColor:[UIColor whiteColor]];
+        [cell.textLabel setBackgroundColor:[UIColor clearColor]];
+        cell.detailTextLabel.text = [[managedObject valueForKey:@"artist"] description];
+        [cell.detailTextLabel setFont:[UIFont fontWithName:@"Helvetica-Light" size:12]];
+        [cell.detailTextLabel setTextColor:[UIColor colorWithWhite:1 alpha:0.7]];
+        [cell.detailTextLabel setBackgroundColor:[UIColor clearColor]];
+    }
+    else {
+        NSManagedObject *managedObject = [self.fetchedResultsController objectAtIndexPath:indexPath];
+        cell.textLabel.text = [[managedObject valueForKey:@"title"] description];
+        //  [cell.textLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:15]];
+        [cell.textLabel setFont:[UIFont fontWithName:@"Helvetica-Light" size:16]];
+        [cell.textLabel setTextColor:[UIColor whiteColor]];
+        [cell.textLabel setBackgroundColor:[UIColor clearColor]];
+        cell.detailTextLabel.text = [[managedObject valueForKey:@"artist"] description];
+        [cell.detailTextLabel setFont:[UIFont fontWithName:@"Helvetica-Light" size:12]];
+        [cell.detailTextLabel setTextColor:[UIColor colorWithWhite:1 alpha:0.7]];
+        [cell.detailTextLabel setBackgroundColor:[UIColor clearColor]];
+    }
 }
 
 - (void)saveContext {
@@ -355,6 +342,70 @@
     if (![context save:&error]) {
         NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
         abort();
+    }
+}
+
+#pragma mark serach
+
+- (void) searchBarTextDidBeginEditing:(UISearchBar *)theSearchBar {
+  //  table.scrollEnabled = NO;
+    searchBar.showsCancelButton = NO;
+    searching = YES;
+    [self searchBar:searchBar textDidChange:searchBar.text];
+}
+
+- (void) searchBarCancelButtonClicked:(UISearchBar *)theSearchBar  {
+    searchBar.showsCancelButton = NO;
+    searching = NO;
+    searchBar.text = @"";
+    [searchBar resignFirstResponder];
+    table.scrollEnabled = YES;
+    [table reloadData];
+}
+
+- (void)searchBar:(UISearchBar *)theSearchBar textDidChange:(NSString *)searchText {
+    
+    //Remove all objects first.
+    [filteredArray removeAllObjects];
+    
+    if([searchText length] > 0) {
+        table.scrollEnabled = YES;
+        searching = YES;
+        [self searchTableView];
+    }
+    else {
+        searching = NO;
+    }
+    
+    [table reloadData];
+}
+
+- (void) searchBarSearchButtonClicked:(UISearchBar *)theSearchBar {
+    if (![theSearchBar.text isEqualToString:@""]) {
+        [self searchTableView];
+        [searchBar resignFirstResponder];
+    }
+    else {
+        searching = NO;
+        [searchBar resignFirstResponder];
+        [table reloadData];
+    }
+    
+}
+
+- (void) searchTableView {
+    
+    NSString *searchText = searchBar.text;
+    // NSMutableArray *searchArray = [[NSMutableArray alloc] initWithArray:finalArray];
+    
+    for (NSManagedObject *managedObject in self.fetchedResultsController.fetchedObjects) {
+        NSString *sTemp = [[managedObject valueForKey:@"title"] description];
+        NSRange titleResultsRange = [sTemp rangeOfString:searchText options:NSCaseInsensitiveSearch];
+        NSString *Temp = [[managedObject valueForKey:@"artist"] description];
+        NSRange titleRes = [Temp rangeOfString:searchText options:NSCaseInsensitiveSearch];
+        if (titleResultsRange.length > 0 || titleRes.length > 0) {
+            [filteredArray addObject:managedObject];
+        }
     }
 }
 

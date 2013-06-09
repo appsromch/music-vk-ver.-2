@@ -121,9 +121,11 @@
     [loadLabel setHidden:YES];
     
     saveButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [saveButton setFrame:CGRectMake(screen.size.width/2 - 12, 5, 25, 25)];
-    [saveButton setImage:[UIImage imageNamed:@"cellSave.png"] forState:UIControlStateNormal];
-    [saveButton setImage:[UIImage imageNamed:@"cellSaved.png"] forState:UIControlStateSelected];
+    [saveButton setFrame:CGRectMake(screen.size.width/2 - 12, 10, 25, 25)];
+  //  [saveButton setImage:[UIImage imageNamed:@"cellSave.png"] forState:UIControlStateNormal];
+  //  [saveButton setImage:[UIImage imageNamed:@"cellSaved.png"] forState:UIControlStateSelected];
+    [saveButton setImage:[UIImage imageNamed:@"downloadNew.png"] forState:UIControlStateNormal];
+    [saveButton setAlpha:0.35];
     [saveButton addTarget:self action:@selector(saveFunc) forControlEvents:UIControlEventTouchUpInside];
     [saveButton setShowsTouchWhenHighlighted:YES];
     [saveButton setHidden:YES];
@@ -148,9 +150,9 @@
     rwd.direction = UISwipeGestureRecognizerDirectionLeft;
     [self.view addGestureRecognizer:rwd];
     
-    UILongPressGestureRecognizer *progressTap = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(progressTapFunc:)];
+ /*   UILongPressGestureRecognizer *progressTap = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(progressTapFunc:)];
     [progressTap setMinimumPressDuration:0.5];
-    [self.view addGestureRecognizer:progressTap];
+    [self.view addGestureRecognizer:progressTap]; */
     
     repeatButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [repeatButton setFrame:CGRectMake(screen.size.width - 94, 5, 40, 32)];
@@ -209,6 +211,7 @@
     [self performSelectorOnMainThread:@selector(addToView2) withObject:self waitUntilDone:NO];
 }
 
+/*
 - (void) customMake {
     CGRect screen = [[UIScreen mainScreen] bounds];
     [self.view setBackgroundColor:[UIColor colorWithWhite:0.1 alpha:1]];
@@ -364,7 +367,7 @@
     }
     
     [self performSelectorOnMainThread:@selector(addToView) withObject:self waitUntilDone:NO];
-}
+} */
 
 - (void) addToView2 {
     [self.view addSubview:circleView];
@@ -378,17 +381,14 @@
     [self.view addSubview:randomButton];
     [self.view addSubview:saveButton];
         UIButton *buttonBack = [UIButton buttonWithType:UIButtonTypeCustom];
-    [buttonBack setFrame:CGRectMake(10, 7, 50, 30)];
+    [buttonBack setFrame:CGRectMake(5, 7, 50, 30)];
     [buttonBack setAlpha:0.2];
-   // [buttonBack setImage:[UIImage imageNamed:@"newback2.png"] forState:UIControlStateNormal];
     [buttonBack setImage:[UIImage imageNamed:@"playerBack.png"] forState:UIControlStateNormal];
     
     [buttonBack addTarget:self action:@selector(revealSidebar) forControlEvents:UIControlEventTouchUpInside];
-    // [buttonBack setImage:[UIImage imageNamed:@"menu2pressed.png"] forState:UIControlStateHighlighted];
     [buttonBack setShowsTouchWhenHighlighted:NO];
     [self.view addSubview:buttonBack];
-    //  [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"playerNavBg.png"] forBarMetrics:UIBarMetricsDefault];
-  UIButton *vPL = [self makeSettingsButtonWithTitle:@"Добавить в плейлист" andFrame:CGRectMake(0, 40, self.view.frame.size.width, 50)];
+    UIButton *vPL = [self makeSettingsButtonWithTitle:@"Добавить в плейлист" andFrame:CGRectMake(0, 40, self.view.frame.size.width, 50)];
     [vPL addTarget:self action:@selector(addToPlaylistFunc) forControlEvents:UIControlEventTouchUpInside];
     [settingsView addSubview:vPL];
     
@@ -412,9 +412,10 @@
     [rate addTarget:self action:@selector(rateFunc) forControlEvents:UIControlEventTouchUpInside];
     [settingsView addSubview:vPL];
     
-    UIButton *removeAds = [self makeSettingsButtonWithTitle:@"Убрать рекламу" andFrame:CGRectMake(0, 400, self.view.frame.size.width, 50)];
-    [removeAds addTarget:self action:@selector(removeAdsFunc) forControlEvents:UIControlEventTouchUpInside];
-    [settingsView addSubview:vPL];
+    MPVolumeView *myVolumeView = [[MPVolumeView alloc] initWithFrame: CGRectMake(self.view.frame.size.width/2 - 20, 360, 40, 50)];
+    [myVolumeView setShowsRouteButton:YES];
+    [myVolumeView setShowsVolumeSlider:NO];
+    [settingsView addSubview: myVolumeView];
     
     DirectionPanGestureRecognizer *volume = [[DirectionPanGestureRecognizer alloc] initWithTarget:self action:@selector(handleVolume:)];
     volume.direction = DirectionPanGestureRecognizerHorizontal;
@@ -438,6 +439,7 @@
     return button;
 }
 
+/*
 - (void) addToView {
     [self.navigationController.navigationBar addSubview:songNumLabel];
     [self.view addSubview:progressSlider];
@@ -452,7 +454,7 @@
     [self.view addSubview:rwdButton];
     [self.view addSubview:repeatButton];
     [self.view addSubview:randomButton];
-}
+} */
 
 - (void) settingsFunc {
     if (settingsView.frame.origin.y != 0){
@@ -1204,7 +1206,8 @@
     
     [self saveContext];
     if (written) {
-        [saveButton setSelected:YES];
+       // [saveButton setSelected:YES];
+        [saveButton setAlpha:1];
     }
 }
 
@@ -1226,7 +1229,7 @@
     return (__bridge NSString *)string;
 }
 
-- (void) saveFunc {
+- (void) saveFunc{
     NSDictionary *dict = [songDictionary objectAtIndex:currentNumber];
     [self insertNewObject:rData withTitle:[dict objectForKey:@"title"] andArtist:[dict objectForKey:@"artist"]];
 }
@@ -1257,10 +1260,6 @@
 }
 
 - (void) rateFunc {
-    
-}
-
-- (void) removeAdsFunc {
     
 }
 

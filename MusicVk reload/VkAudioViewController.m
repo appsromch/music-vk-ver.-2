@@ -75,9 +75,9 @@
     UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 1)];
     [footerView setBackgroundColor:[UIColor clearColor]];
     [table setTableFooterView:footerView];
-    UISwipeGestureRecognizer* sgr = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(cellSwiped:)];
-    [sgr setDirection:UISwipeGestureRecognizerDirectionLeft];
-    [table addGestureRecognizer:sgr];
+ //   UISwipeGestureRecognizer* sgr = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(cellSwiped:)];
+   // [sgr setDirection:UISwipeGestureRecognizerDirectionLeft];
+   // [table addGestureRecognizer:sgr];
     refreshControl = [[ODRefreshControl alloc] initInScrollView:table];
     [refreshControl addTarget:self action:@selector(dropViewPulled) forControlEvents:UIControlEventValueChanged];
     [self setView:table];
@@ -284,8 +284,9 @@
     if (cell.contentView.subviews.count == 2) {
         UIButton *saveButton = [UIButton buttonWithType:UIButtonTypeCustom];
         [saveButton setFrame:CGRectMake(self.view.frame.size.width - 37, 7, 30, 30)];
-        [saveButton setImageEdgeInsets:UIEdgeInsetsMake(0, 6, 6, 0)];
-        [saveButton setImage:[UIImage imageNamed:@"cellSave.png"] forState:UIControlStateNormal];
+        [saveButton setImageEdgeInsets:UIEdgeInsetsMake(0, 8, 8, 0)];
+       // [saveButton setImage:[UIImage imageNamed:@"cellSave.png"] forState:UIControlStateNormal];
+        [saveButton setImage:[UIImage imageNamed:@"downloadNew.png"] forState:UIControlStateNormal];
         [saveButton addTarget:self action:@selector(saveFunc:) forControlEvents:UIControlEventTouchUpInside];
         [saveButton setAlpha:0.2];
         [saveButton setTag:indexPath.row];
@@ -294,143 +295,9 @@
     }
 }
 
-- (void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell *cell = [table cellForRowAtIndexPath:indexPath];
-    [cell setSelected:NO];
-    [cell setHighlighted:NO];
-    // NSLog(@"swiped 1 %@", cell.contentView.subviews);
-    if (cell.contentView.subviews.count == 2) {
-        NSLog(@"swiped 2");
-        UIView *view = [[UIView alloc] initWithFrame:CGRectMake(320, 0, 0, 44)];
-        [view setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"cellAction.png"]]];
-        [view setTag:indexPath.row];
-        [cell.contentView addSubview:view];
-        
-        UIButton *saveButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        [saveButton setFrame:CGRectMake(100, 2, 30, 30)];
-        [saveButton setImage:[UIImage imageNamed:@"cellSave.png"] forState:UIControlStateNormal];
-        [saveButton addTarget:self action:@selector(saveFunc:) forControlEvents:UIControlEventTouchUpInside];
-        [saveButton setTag:indexPath.row];
-        [saveButton setShowsTouchWhenHighlighted:YES];
-        [view addSubview:saveButton];
-        
-        UILabel *saveLabel = [[UILabel alloc] initWithFrame:CGRectMake(95, 30, 40, 12)];
-        [saveLabel setBackgroundColor:[UIColor clearColor]];
-        [saveLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:10]];
-        [saveLabel setTextAlignment:NSTextAlignmentCenter];
-        [saveLabel setText:@"Save"];
-        [saveLabel setTextColor:[UIColor colorWithWhite:0.9 alpha:1]];
-        [saveLabel setNumberOfLines:1];
-        [saveLabel setShadowColor:[UIColor blackColor]];
-        [saveLabel setShadowOffset:CGSizeMake(0, 1)];
-        [view addSubview:saveLabel];
-        
-        UIButton *playButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        [playButton setFrame:CGRectMake(50, 2, 30, 30)];
-        [playButton setTag:indexPath.row];
-        [playButton setImage:[UIImage imageNamed:@"cellPlay.png"] forState:UIControlStateNormal];
-        [playButton addTarget:self action:@selector(playFunc:) forControlEvents:UIControlEventTouchUpInside];
-        [playButton setShowsTouchWhenHighlighted:YES];
-        [view addSubview:playButton];
-        
-        UILabel *playLabel = [[UILabel alloc] initWithFrame:CGRectMake(45, 30, 40, 12)];
-        [playLabel setBackgroundColor:[UIColor clearColor]];
-        [playLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:10]];
-        [playLabel setTextAlignment:NSTextAlignmentCenter];
-        [playLabel setText:@"Play"];
-        [playLabel setTextColor:[UIColor colorWithWhite:0.9 alpha:1]];
-        [playLabel setNumberOfLines:1];
-        [playLabel setShadowColor:[UIColor blackColor]];
-        [playLabel setShadowOffset:CGSizeMake(0, 1)];
-        [view addSubview:playLabel];
-        
-        [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
-        
-        [UIView animateWithDuration:0.5 animations:^{
-            [view setFrame:CGRectMake(170, 0, 150, 44)];
-        }];
-    }
-}
-
-- (void)cellSwiped:(UIGestureRecognizer *)gestureRecognizer {
-    if (gestureRecognizer.state == UIGestureRecognizerStateEnded) {
-        CGPoint location = [gestureRecognizer locationInView:table];
-        NSIndexPath *indexPath = [table indexPathForRowAtPoint:location];
-        UITableViewCell *cell = [table cellForRowAtIndexPath:indexPath];
-        [cell setSelected:NO];
-        [cell setHighlighted:NO];
-       // NSLog(@"swiped 1 %@", cell.contentView.subviews);
-        if (cell.contentView.subviews.count == 2) {
-            NSLog(@"swiped 2");
-            UIView *view = [[UIView alloc] initWithFrame:CGRectMake(320, 0, 0, 44)];
-            [view setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"cellAction.png"]]];
-            [view setTag:indexPath.row];
-            [cell.contentView addSubview:view];
-            
-            UIButton *saveButton = [UIButton buttonWithType:UIButtonTypeCustom];
-            [saveButton setFrame:CGRectMake(100, 2, 30, 30)];
-            [saveButton setImage:[UIImage imageNamed:@"cellSave.png"] forState:UIControlStateNormal];
-            [saveButton addTarget:self action:@selector(saveFunc:) forControlEvents:UIControlEventTouchUpInside];
-            [saveButton setTag:indexPath.row];
-            [saveButton setShowsTouchWhenHighlighted:YES];
-            [view addSubview:saveButton];
-            
-            UILabel *saveLabel = [[UILabel alloc] initWithFrame:CGRectMake(95, 30, 40, 12)];
-            [saveLabel setBackgroundColor:[UIColor clearColor]];
-            [saveLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:10]];
-            [saveLabel setTextAlignment:NSTextAlignmentCenter];
-            [saveLabel setText:@"Save"];
-            [saveLabel setTextColor:[UIColor colorWithWhite:0.9 alpha:1]];
-            [saveLabel setNumberOfLines:1];
-            [saveLabel setShadowColor:[UIColor blackColor]];
-            [saveLabel setShadowOffset:CGSizeMake(0, 1)];
-            [view addSubview:saveLabel];
-            
-            UIButton *playButton = [UIButton buttonWithType:UIButtonTypeCustom];
-            [playButton setFrame:CGRectMake(50, 2, 30, 30)];
-            [playButton setTag:indexPath.row];
-            [playButton setImage:[UIImage imageNamed:@"cellPlay.png"] forState:UIControlStateNormal];
-            [playButton addTarget:self action:@selector(playFunc:) forControlEvents:UIControlEventTouchUpInside];
-            [playButton setShowsTouchWhenHighlighted:YES];
-            [view addSubview:playButton];
-            
-            UILabel *playLabel = [[UILabel alloc] initWithFrame:CGRectMake(45, 30, 40, 12)];
-            [playLabel setBackgroundColor:[UIColor clearColor]];
-            [playLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:10]];
-            [playLabel setTextAlignment:NSTextAlignmentCenter];
-            [playLabel setText:@"Play"];
-            [playLabel setTextColor:[UIColor colorWithWhite:0.9 alpha:1]];
-            [playLabel setNumberOfLines:1];
-            [playLabel setShadowColor:[UIColor blackColor]];
-            [playLabel setShadowOffset:CGSizeMake(0, 1)];
-            [view addSubview:playLabel];
-            
-            [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
-            
-            [UIView animateWithDuration:0.5 animations:^{
-                [view setFrame:CGRectMake(170, 0, 150, 44)];
-            }];
-        }
-        //..
-    }
-}
-
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    NSLog(@"selected cell at %@", indexPath);
-    UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
-    if (cell.contentView.subviews.count > 2) {
-        UIView *view = [cell.contentView.subviews objectAtIndex:2];
-        [UIView animateWithDuration:0.5 animations:^{
-            [view setFrame:CGRectMake(320, 0, 0, 44)];
-        } completion:^(BOOL fin) {
-            [view removeFromSuperview];
-            [cell setSelectionStyle:UITableViewCellSelectionStyleBlue];
-        }];
-    }
-    else {
         [self goToPlayer:indexPath.row];
-    }
-    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+        [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 #pragma mark music methods
@@ -467,11 +334,6 @@
 - (NSMutableData*)dataForConnection:(CustomURLConnection*)connection {
     NSMutableData *data = [dictionaryForConnection objectForKey:connection.tag];
     return data;
-}
-
-- (void) playFunc:(id) sender {
-    UIButton *butt = sender;
-    [self goToPlayer:butt.tag];
 }
 
 - (void) goToPlayer: (int) row {
@@ -530,7 +392,7 @@
      [table reloadData];
  }
 
-- (void)insertNewObject:(NSData *)data withTitle:(NSString *)name andArtist:(NSString *)art {
+- (void)insertNewObject:(NSData *)data withTitle:(NSString *)name andArtist:(NSString *)art{
     name = [name stringByReplacingOccurrencesOfString:@"&#39;" withString:@"'"];
     name = [name stringByReplacingOccurrencesOfString:@"&#33;" withString:@"!"];
     name = [name stringByReplacingOccurrencesOfString:@"&amp;" withString:@"&"];
