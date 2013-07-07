@@ -40,7 +40,8 @@
         searchField.textColor = [UIColor whiteColor];
         [searchField setEnablesReturnKeyAutomatically:NO];
         [searchField setFont:[UIFont fontWithName:@"Helvetica-Light" size:16]];
-        [searchField setBackground:[UIImage imageNamed:@"searchbg.png"] ];
+       // [searchField setBackground:[UIImage imageNamed:@"searchbg.png"] ];
+        [searchField setBackgroundColor:[UIColor colorWithWhite:0 alpha:0.3]];
         [searchField.layer setCornerRadius:3.0f];
         [searchField setBorderStyle:UITextBorderStyleNone];
     }

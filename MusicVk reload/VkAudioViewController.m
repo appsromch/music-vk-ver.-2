@@ -61,7 +61,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
 	self.view.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
-	self.view.backgroundColor = [UIColor whiteColor];
+	self.view.backgroundColor = [UIColor clearColor];
     dictionaryForConnection = [[NSMutableDictionary alloc] init];
     progressViewsForConnection = [[NSMutableDictionary alloc] init];
     expectedLength = [[NSMutableDictionary alloc] init];
@@ -239,6 +239,8 @@
         cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:SimpleTableIdentifier];
         //[cell.contentView setBackgroundColor:[UIColor colorWithWhite:0.98 alpha:1]];
         [cell.contentView setBackgroundColor:[UIColor clearColor]];
+        [cell setBackgroundColor:[UIColor clearColor]];
+        [cell.textLabel setBackgroundColor:[UIColor clearColor]];
         //  UIView *line = [[UIView alloc] initWithFrame:CGRectMake(0, 0, cell.frame.size.width, 1)];
         //  [line setBackgroundColor:[UIColor whiteColor]];
         //  [cell.contentView addSubview:line];

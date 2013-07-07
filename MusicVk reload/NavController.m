@@ -7,6 +7,8 @@
 //
 
 #import "NavController.h"
+#import "UIImage+StackBlur.h"
+#import "UIImage+Brightness.h"
 
 @interface NavController ()
 
@@ -20,17 +22,29 @@
     if (self) {
         // Custom initialization
         [self.navigationBar setAlpha:1];
-      //  [self.navigationBar setBackgroundImage:[UIImage imageNamed:@"navBg2.png"] forBarMetrics:UIBarMetricsDefault];
-        [self.navigationBar setBackgroundImage:[UIImage imageNamed:@"navnew.png"] forBarMetrics:UIBarMetricsDefault];
-       
+        
+      //  [self.navigationBar setBarStyle:UIBarStyleBlackTranslucent];
+       // [self.navigationBar setBackgroundImage:[UIImage imageNamed:@"navnew.png"] forBarPosition:UIBarPositionAny barMetrics:UIBarMetricsDefault];
+       // [self.navigationBar setBackgroundColor:[UIColor clearColor]];
         NSUserDefaults *ud = [NSUserDefaults standardUserDefaults];
         NSString *bgname = [ud objectForKey:@"bgPic"];
-        if (bgname == nil) {
+        if ([bgname isEqualToString:@""]) {
             bgname = @"player1.jpg";
             [ud setValue:bgname forKey:@"bgPic"];
             [ud synchronize];
         }
-        [self.view setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:bgname]]];
+        UIImage *img = [UIImage imageNamed:bgname];
+        
+        
+      //  UIImage *blur = [img stackBlur:15];
+        
+        
+       // blur = [blur imageWithBrightness:-0.6f];
+      
+        
+        // [self.navigationBar setBackgroundImage:[UIImage imageNamed:@"navNew.png"] forBarMetrics:UIBarMetricsDefault];
+        [self.navigationBar setBackgroundImage:img forBarMetrics:UIBarMetricsDefault];
+        [self.view setBackgroundColor:[UIColor colorWithPatternImage:img]];
         
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(setBg)

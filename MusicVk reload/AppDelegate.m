@@ -35,7 +35,7 @@
 
 #pragma mark UIApplicationDelegate
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleBlackOpaque animated:NO];
+	//[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleBlackOpaque animated:NO];
 	[[UIApplication sharedApplication] setIdleTimerDisabled:NO];
     [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
     [self becomeFirstResponder];
@@ -104,8 +104,9 @@
 																	  withControllers:controllers
 																		withCellInfos:cellInfos
                                                                            withPlayer:playerNC];
+    CGRect screen = [UIScreen mainScreen].bounds;
 	
-    self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+    self.window = [[UIWindow alloc] initWithFrame:CGRectMake(screen.origin.x, screen.origin.y, screen.size.width, screen.size.height)];
     self.window.rootViewController = self.revealController;
     [self.window makeKeyAndVisible];
     return YES;
