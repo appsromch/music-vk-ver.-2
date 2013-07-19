@@ -10,6 +10,8 @@
 #import "UIImage+StackBlur.h"
 #import "UIImage+Brightness.h"
 
+#define SYSTEM_VERSION_LESS_THAN(v)                 ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedAscending)
+
 @interface NavController ()
 
 @end
@@ -22,14 +24,11 @@
     if (self) {
         // Custom initialization
         [self.navigationBar setAlpha:1];
-        
-      //  [self.navigationBar setBarStyle:UIBarStyleBlackTranslucent];
-       // [self.navigationBar setBackgroundImage:[UIImage imageNamed:@"navnew.png"] forBarPosition:UIBarPositionAny barMetrics:UIBarMetricsDefault];
-       // [self.navigationBar setBackgroundColor:[UIColor clearColor]];
         NSUserDefaults *ud = [NSUserDefaults standardUserDefaults];
         NSString *bgname = [ud objectForKey:@"bgPic"];
-        if ([bgname isEqualToString:@""]) {
-            bgname = @"player1.jpg";
+        NSLog(@"bg name = %@", bgname);
+        if (bgname == nil) {
+            bgname = @"playerbg1.jpg";
             [ud setValue:bgname forKey:@"bgPic"];
             [ud synchronize];
         }
@@ -39,11 +38,20 @@
       //  UIImage *blur = [img stackBlur:15];
         
         
-       // blur = [blur imageWithBrightness:-0.6f];
+       // img = [img imageWithBrightness:0.99f];
       
-        
-        // [self.navigationBar setBackgroundImage:[UIImage imageNamed:@"navNew.png"] forBarMetrics:UIBarMetricsDefault];
-        [self.navigationBar setBackgroundImage:img forBarMetrics:UIBarMetricsDefault];
+        if (SYSTEM_VERSION_LESS_THAN(@"7.0")) {
+            NSLog(@"less that 7");
+            [self.navigationBar setBackgroundImage:[UIImage imageNamed:@"navNew.png"] forBarMetrics:UIBarMetricsDefault];
+            [ud setObject:@"0" forKey:@"padding"];
+            [ud synchronize];
+        }
+        else {
+            NSLog(@"more than 7");
+            [ud setObject:@"20" forKey:@"padding"];
+            [ud synchronize];
+            [self.navigationBar setBackgroundImage:img forBarMetrics:UIBarMetricsDefault];
+        }
         [self.view setBackgroundColor:[UIColor colorWithPatternImage:img]];
         
         [[NSNotificationCenter defaultCenter] addObserver:self

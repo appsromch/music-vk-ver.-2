@@ -9,8 +9,9 @@
 #import <UIKit/UIKit.h>
 #import "GHRootViewController.h"
 #import <CoreData/CoreData.h>
+#import "RootViewController.h"
 
-@interface VkAudioViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, NSURLConnectionDelegate, NSFetchedResultsControllerDelegate> {
+@interface VkAudioViewController : RootViewController <UITableViewDataSource, UITableViewDelegate, NSURLConnectionDelegate, NSFetchedResultsControllerDelegate> {
 @private
 	RevealBlock _revealBlock;
     UITableView *table;

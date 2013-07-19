@@ -7,7 +7,13 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "THLabel.h"
 
-@interface CustomCell : UITableViewCell
+@interface CustomCell : UITableViewCell {
+    
+}
+
+@property (nonatomic, retain) THLabel *textLabel;
+@property (nonatomic, retain) THLabel *detailTextLabel;
 
 @end

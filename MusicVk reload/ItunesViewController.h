@@ -1,17 +1,18 @@
 //
-//  PlayListView.h
+//  ItunesViewController.h
 //  MusicVk reload
 //
-//  Created by David Dreval on 04.06.13.
+//  Created by David Dreval on 16.07.13.
 //  Copyright (c) 2013 David Dreval. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
+#import <MediaPlayer/MediaPlayer.h>
 #import "GHRootViewController.h"
 #import <CoreData/CoreData.h>
 #import "RootViewController.h"
 
-@interface PlayListView : RootViewController <UITableViewDataSource, UITableViewDelegate, NSURLConnectionDelegate, NSFetchedResultsControllerDelegate> {
+@interface ItunesViewController : RootViewController <UITableViewDataSource, UITableViewDelegate, NSURLConnectionDelegate, NSFetchedResultsControllerDelegate> {
 @private
 	RevealBlock _revealBlock;
     UITableView *table;

@@ -9,6 +9,8 @@
 #import "customSearchBar.h"
 #import <QuartzCore/QuartzCore.h>
 
+#define SYSTEM_VERSION_LESS_THAN(v)                 ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedAscending)
+
 @implementation customSearchBar
 
 - (id)initWithFrame:(CGRect)frame
@@ -22,16 +24,38 @@
 
 - (void)layoutSubviews {
     UITextField *searchField;
-    NSUInteger numViews = [self.subviews count];
-    NSLog(@"%@", self.subviews);
-    UIView *bg = [self.subviews objectAtIndex:0];
-    if ([bg isKindOfClass:NSClassFromString(@"UISearchBarBackground") ] )
-        bg.alpha = 0.0;
-    for(int i = 0; i < numViews; i++) {
-        if([[self.subviews objectAtIndex:i] isKindOfClass:[UITextField class]]) { //conform?
-            searchField = [self.subviews objectAtIndex:i];
+    UIView *subbg;
+    NSUInteger numViews = 0;
+    UIView *bg;
+    if (SYSTEM_VERSION_LESS_THAN(@"7.0")) {
+        bg = [self.subviews objectAtIndex:0];
+        numViews = [self.subviews count];
+        NSLog(@"%@", self.subviews);
+        if ([bg isKindOfClass:NSClassFromString(@"UISearchBarBackground") ] ) {
+            [bg setAlpha:0];
+        }
+        for(int i = 0; i < numViews; i++) {
+            if([[self.subviews objectAtIndex:i] isKindOfClass:[UITextField class]]) { //conform?
+                NSLog(@"%d", i);
+                searchField = [self.subviews objectAtIndex:i];
+            }
         }
     }
+    else {
+        bg = [self.subviews objectAtIndex:0];
+        numViews = [bg.subviews count];
+        subbg = [bg.subviews objectAtIndex:0];
+        if ([subbg isKindOfClass:NSClassFromString(@"UISearchBarBackground") ] ) {
+            [subbg setAlpha:0];
+        }
+        for(int i = 0; i < numViews; i++) {
+            if([[bg.subviews objectAtIndex:i] isKindOfClass:[UITextField class]]) { //conform?
+                searchField = [bg.subviews objectAtIndex:i];
+            }
+        }
+    }
+           // ПРОВЕРКА НА НОМЕР ОС 6 или 7 И ИСПРАВЛЕНИЕ
+    
     if(!(searchField == nil)) {
         UIImageView *srcimg = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"searchNew2.png"]];
         [srcimg setAlpha:0.13];
@@ -40,10 +64,11 @@
         searchField.textColor = [UIColor whiteColor];
         [searchField setEnablesReturnKeyAutomatically:NO];
         [searchField setFont:[UIFont fontWithName:@"Helvetica-Light" size:16]];
-       // [searchField setBackground:[UIImage imageNamed:@"searchbg.png"] ];
-        [searchField setBackgroundColor:[UIColor colorWithWhite:0 alpha:0.3]];
+        [searchField setBackground:[UIImage imageNamed:@"searchbg2.png"] ];
+        [searchField setBackgroundColor:[UIColor colorWithWhite:0 alpha:0.2]];
         [searchField.layer setCornerRadius:3.0f];
         [searchField setBorderStyle:UITextBorderStyleNone];
+        NSLog(@"%@", searchField.subviews);
     }
     
     [super layoutSubviews];

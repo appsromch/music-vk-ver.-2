@@ -285,15 +285,17 @@
 {
     if (cell.contentView.subviews.count == 2) {
         UIButton *saveButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        [saveButton setFrame:CGRectMake(self.view.frame.size.width - 37, 7, 30, 30)];
-        [saveButton setImageEdgeInsets:UIEdgeInsetsMake(0, 8, 8, 0)];
+        //[saveButton setFrame:CGRectMake(self.view.frame.size.width - 37, 7, 30, 30)];
+        [saveButton setFrame:CGRectMake(0, 7, 44, 30)];
+        [saveButton setImageEdgeInsets:UIEdgeInsetsMake(0, 0, 0, 0)];
        // [saveButton setImage:[UIImage imageNamed:@"cellSave.png"] forState:UIControlStateNormal];
         [saveButton setImage:[UIImage imageNamed:@"downloadNew.png"] forState:UIControlStateNormal];
         [saveButton addTarget:self action:@selector(saveFunc:) forControlEvents:UIControlEventTouchUpInside];
         [saveButton setAlpha:0.2];
         [saveButton setTag:indexPath.row];
         [saveButton setShowsTouchWhenHighlighted:YES];
-        [cell.contentView addSubview:saveButton];
+        cell.accessoryView = saveButton;
+       // [cell.contentView addSubview:saveButton];
     }
 }
 

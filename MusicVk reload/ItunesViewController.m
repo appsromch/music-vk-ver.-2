@@ -1,19 +1,18 @@
 //
-//  PlayListView.m
+//  ItunesViewController.m
 //  MusicVk reload
 //
-//  Created by David Dreval on 04.06.13.
+//  Created by David Dreval on 16.07.13.
 //  Copyright (c) 2013 David Dreval. All rights reserved.
 //
 
-#import "PlayListView.h"
-@interface PlayListView ()
+#import "ItunesViewController.h"
+
+@interface ItunesViewController ()
 
 @end
 
-#pragma mark -
-#pragma mark Implementation
-@implementation PlayListView
+@implementation ItunesViewController
 @synthesize fetchedResultsController;
 @synthesize managedObjectContext;
 
@@ -53,6 +52,21 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    MPMediaQuery *query = [[MPMediaQuery alloc] init];
+    [query setGroupingType:MPMediaGroupingTitle];
+    audioArray = [[NSMutableArray alloc] initWithArray:[query items]];
+    NSLog(@"%@", audioArray);
+    table = [[UITableView alloc] init];
+    [table setDelegate:self];
+    [table setDataSource:self];
+    [table setBackgroundColor:[UIColor clearColor]];
+    [table setSeparatorColor:[UIColor colorWithWhite:0 alpha:0.05]];
+    UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 1)];
+    [footerView setBackgroundColor:[UIColor clearColor]];
+    [table setTableFooterView:footerView];
+   // refreshControl = [[ODRefreshControl alloc] initInScrollView:table];
+   // [refreshControl addTarget:self action:@selector(dropViewPulled) forControlEvents:UIControlEventValueChanged];
+    [self setView:table];
 	// Do any additional setup after loading the view.
 }
 
@@ -77,7 +91,7 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return 1;
+    return audioArray.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -89,13 +103,31 @@
         [cell.contentView setBackgroundColor:[UIColor clearColor]];
         [cell setBackgroundColor:[UIColor clearColor]];
     }
+    MPMediaItem *item = [audioArray objectAtIndex:indexPath.row];
+    NSString *name = [item valueForProperty: MPMediaItemPropertyTitle];
+    NSString *art = [item valueForProperty: MPMediaItemPropertyArtist];
+    [cell.textLabel setFont:[UIFont fontWithName:@"Helvetica-Light" size:16]];
+    [cell.textLabel setTextColor:[UIColor whiteColor]];
+    [cell.textLabel setBackgroundColor:[UIColor clearColor]];
     
+    [cell.detailTextLabel setFont:[UIFont fontWithName:@"Helvetica-Light" size:12]];
+    [cell.detailTextLabel setTextColor:[UIColor colorWithWhite:1 alpha:0.7]];
+    [cell.detailTextLabel setBackgroundColor:[UIColor clearColor]];
+    
+    [cell.textLabel setText:name];
+    [cell.detailTextLabel setText:art];
     return cell;
     
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     NSLog(@"selected cell at %@", indexPath);
+    [[NSUserDefaults standardUserDefaults] setObject:@"itunes" forKey:@"window"];
+    [[NSUserDefaults standardUserDefaults] setObject:[NSString stringWithFormat:@"%d", indexPath.row] forKey:@"songNumber"];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"openPlayer" object:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"newSong" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:audioArray, @"audioArray", nil]];
+    
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 

@@ -13,6 +13,7 @@
 #import <AudioToolbox/AudioToolbox.h>
 #import <MediaPlayer/MediaPlayer.h>
 #import "circle.h"
+#import "THLabel.h"
 
 @interface PlayerViewController : UIViewController <NSFetchedResultsControllerDelegate, AVAudioPlayerDelegate, AVAudioSessionDelegate, NSURLConnectionDelegate, UIGestureRecognizerDelegate> {
     MPMusicPlayerController *mplayer;
@@ -24,8 +25,8 @@
     NSMutableData *rData;
     UILabel *loadLabel;
     UILabel *songNumLabel;
-    UILabel *songTitleLabel;
-    UILabel *songArtistLabel;
+    THLabel *songTitleLabel;
+    THLabel *songArtistLabel;
     UILabel *songTime;
     UILabel *songTimeLeft;
     UIView *bottomView;
@@ -45,6 +46,7 @@
     NSTimer *updateTimer;
     BOOL isRandom;
     int loops;
+    float padding;
     float rLenght;
     circle *circleView;
     UIView *back;

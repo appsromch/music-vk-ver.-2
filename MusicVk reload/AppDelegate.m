@@ -12,16 +12,20 @@
 #import "GHMenuCell.h"
 #import "GHRootViewController.h"
 #import "NavController.h"
+#import "ItunesViewController.h"
 #import "ViewController.h"
 #import "PlayerViewController.h"
 #import "PlayListView.h"
 #import "VkAudioViewController.h"
+#import "RESideMenu.h"
 
 #pragma mark -
 #pragma mark Private Interface
 @interface AppDelegate ()
 @property (nonatomic, strong) GHRevealViewController *revealController;
 @property (nonatomic, strong) GHMenuViewController *menuController;
+@property (nonatomic, retain) PlayerViewController *playerVC;
+@property (nonatomic, retain) NavController *menuVC;
 @end
 
 
@@ -32,6 +36,18 @@
 @synthesize managedObjectContext = __managedObjectContext;
 @synthesize managedObjectModel = __managedObjectModel;
 @synthesize persistentStoreCoordinator = __persistentStoreCoordinator;
+@synthesize controllers;
+
+
++ (NSInteger)OSVersion
+{
+    static NSUInteger _deviceSystemMajorVersion = -1;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        _deviceSystemMajorVersion = [[[[[UIDevice currentDevice] systemVersion] componentsSeparatedByString:@"."] objectAtIndex:0] intValue];
+    });
+    return _deviceSystemMajorVersion;
+}
 
 #pragma mark UIApplicationDelegate
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
@@ -39,14 +55,23 @@
 	[[UIApplication sharedApplication] setIdleTimerDisabled:NO];
     [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
     [self becomeFirstResponder];
-	UIColor *bgColor = [UIColor colorWithRed:(15.0f/255.0f) green:(15.0f/255.0f) blue:(15.0f/255.0f) alpha:1.0f];
+	NSLog(@"managed object = %@", self.managedObjectContext);
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(openPlayer)
+                                                 name:@"openPlayer"
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(openMenu)
+                                                 name:@"openMenu"
+                                               object:nil];
+    /* UIColor *bgColor = [UIColor colorWithRed:(15.0f/255.0f) green:(15.0f/255.0f) blue:(15.0f/255.0f) alpha:1.0f];
 	self.revealController = [[GHRevealViewController alloc] initWithNibName:nil bundle:nil];
 	self.revealController.view.backgroundColor = bgColor;
 	RevealBlock revealBlock = ^(){
 		[self.revealController toggleSidebar:!self.revealController.sidebarShowing
 									duration:kGHRevealSidebarDefaultAnimationDuration];
 	};
-	NSLog(@"managed object = %@", self.managedObjectContext);
+	
 	NSArray *headers = @[
                       [NSNull null],
                       @"Вконтакте"
@@ -94,8 +119,6 @@
     PlayerViewController *playerVC = [[PlayerViewController alloc]initWithRevealBlock:revealBlock andManagedObject:self.managedObjectContext];
     
     NavController *playerNC = [[NavController alloc] initWithRootViewController:playerVC];
-   // [playerNC.navigationBar setBackgroundImage:[UIImage imageNamed:@"playerNavBg.png"] forBarMetrics:UIBarMetricsDefault];
-   // [playerNC.navigationBar setBackgroundColor:[UIColor colorWithWhite:1 alpha:0.05]];
     [playerNC.navigationBar setHidden:YES];
     
 	self.menuController = [[GHMenuViewController alloc] initWithSidebarViewController:self.revealController
@@ -108,10 +131,46 @@
 	
     self.window = [[UIWindow alloc] initWithFrame:CGRectMake(screen.origin.x, screen.origin.y, screen.size.width, screen.size.height)];
     self.window.rootViewController = self.revealController;
+     */
+    _playerVC = [[PlayerViewController alloc]initWithRevealBlock:nil andManagedObject:self.managedObjectContext];
+    controllers = @[
+                             @[
+                                 [[NavController alloc] initWithRootViewController:[[GHRootViewController alloc] initWithTitle:@"Сохраненные" withRevealBlock:nil andManagedObject:self.managedObjectContext]],
+                                 [[NavController alloc] initWithRootViewController:[[PlayListView alloc] initWithTitle:@"Плейлисты" withRevealBlock:nil andManagedObject:self.managedObjectContext]],
+                                 [[NavController alloc] initWithRootViewController:[[GHRootViewController alloc] initWithTitle:@"Настройки" withRevealBlock:nil andManagedObject:self.managedObjectContext]],
+                                 ],
+                             @[
+                                 [[NavController alloc] initWithRootViewController:[[VkAudioViewController alloc] initWithTitle:@"Аудиозаписи Vk" withRevealBlock:nil andManagedObject:self.managedObjectContext]],
+                                 [[NavController alloc] initWithRootViewController:[[ItunesViewController alloc] initWithTitle:@"Itunes/Песни" withRevealBlock:nil andManagedObject:self.managedObjectContext]],
+                                 [[NavController alloc] initWithRootViewController:[[GHRootViewController alloc] initWithTitle:@"Рекомендации Vk" withRevealBlock:nil andManagedObject:self.managedObjectContext]],
+                                 [[NavController alloc] initWithRootViewController:[[GHRootViewController alloc] initWithTitle:@"Поиск Vk" withRevealBlock:nil andManagedObject:self.managedObjectContext]],
+                                // [[NavController alloc] initWithRootViewController:[[GHRootViewController alloc] initWithTitle:@"Аудиозаписи друзей Vk" withRevealBlock:nil andManagedObject:self.managedObjectContext]],
+                                 ]
+                             ];
+    _menuVC = controllers[0][0];
+    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    self.window.rootViewController = _menuVC;
+    self.window.backgroundColor = [UIColor whiteColor];
+     
     [self.window makeKeyAndVisible];
     return YES;
 }
 
+- (void) openPlayer {
+    [UIView transitionWithView:self.window
+                      duration:0.5
+                       options:UIViewAnimationOptionTransitionCrossDissolve
+                    animations:^{ self.window.rootViewController = _playerVC; }
+                    completion:nil];
+}
+
+- (void) openMenu {
+    [UIView transitionWithView:self.window
+                      duration:0.5
+                       options:UIViewAnimationOptionTransitionCrossDissolve
+                    animations:^{ self.window.rootViewController = _menuVC; }
+                    completion:nil];
+}
 
 - (void)applicationWillResignActive:(UIApplication *)application
 {
