@@ -33,13 +33,12 @@
             [ud synchronize];
         }
         UIImage *img = [UIImage imageNamed:bgname];
-        
+        [self.view setBackgroundColor:[UIColor colorWithPatternImage:img]];
         
       //  UIImage *blur = [img stackBlur:15];
         
         
        // img = [img imageWithBrightness:0.99f];
-      
         if (SYSTEM_VERSION_LESS_THAN(@"7.0")) {
             NSLog(@"less that 7");
             [self.navigationBar setBackgroundImage:[UIImage imageNamed:@"navNew.png"] forBarMetrics:UIBarMetricsDefault];
@@ -52,7 +51,6 @@
             [ud synchronize];
             [self.navigationBar setBackgroundImage:img forBarMetrics:UIBarMetricsDefault];
         }
-        [self.view setBackgroundColor:[UIColor colorWithPatternImage:img]];
         
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(setBg)
@@ -70,6 +68,18 @@
 
 - (void) setBg {
     NSUserDefaults *ud = [NSUserDefaults standardUserDefaults];
+    if (SYSTEM_VERSION_LESS_THAN(@"7.0")) {
+        NSLog(@"less that 7");
+        [self.navigationBar setBackgroundImage:[UIImage imageNamed:@"navNew.png"] forBarMetrics:UIBarMetricsDefault];
+        [ud setObject:@"0" forKey:@"padding"];
+        [ud synchronize];
+    }
+    else {
+        NSLog(@"more than 7");
+        [ud setObject:@"20" forKey:@"padding"];
+        [ud synchronize];
+        [self.navigationBar setBackgroundImage:[UIImage imageNamed:[ud objectForKey:@"bgPic"]] forBarMetrics:UIBarMetricsDefault];
+    }
     [self.view setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:[ud objectForKey:@"bgPic"]]]];
 }
 

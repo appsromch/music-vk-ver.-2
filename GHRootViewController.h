@@ -8,10 +8,11 @@
 #import <Foundation/Foundation.h>
 #import "ODRefreshControl.h"
 #import <CoreData/CoreData.h>
+#import "RootViewController.h"
 
 typedef void (^RevealBlock)();
 
-@interface GHRootViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, NSURLConnectionDelegate, NSFetchedResultsControllerDelegate, UISearchBarDelegate, UISearchDisplayDelegate> {
+@interface GHRootViewController : RootViewController <UITableViewDataSource, UITableViewDelegate, NSURLConnectionDelegate, NSFetchedResultsControllerDelegate, UISearchBarDelegate, UISearchDisplayDelegate> {
 @private
 	RevealBlock _revealBlock;
     UITableView *table;

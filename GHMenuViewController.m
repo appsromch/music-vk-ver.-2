@@ -11,6 +11,7 @@
 #import "GHRevealViewController.h"
 #import <QuartzCore/QuartzCore.h>
 
+#define SYSTEM_VERSION_LESS_THAN(v)                 ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedAscending)
 
 #pragma mark -
 #pragma mark Implementation
@@ -44,18 +45,17 @@
 		_player = player;
 		_sidebarVC.sidebarViewController = self;
 		_sidebarVC.contentViewController = _controllers[0][0];
-        [[NSNotificationCenter defaultCenter] addObserver:self
+        [[UIApplication sharedApplication]
+         setStatusBarStyle:UIStatusBarStyleBlackOpaque animated:NO];
+      /*  [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(moveSideBar)
                                                      name:@"openPlayer"
-                                                   object:nil];
+                                                   object:nil]; */
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(updateLabel:)
                                                      name:@"updateSideBarLabel"
                                                    object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(updatePlayPause:)
-                                                     name:@"updatePlayPause"
-                                                   object:nil];
+        
         
 	}
 	return self;
@@ -65,7 +65,7 @@
 - (void)viewDidLoad {
 	[super viewDidLoad];
     UIView *view = [[UIView alloc] init];
-    view.frame = CGRectMake(0, 0, 300, 44);
+    view.frame = CGRectMake(0, 20, 300, 44);
     view.autoresizingMask = (UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth);
     CAGradientLayer *gradientS = [CAGradientLayer layer];
     gradientS.frame = CGRectMake(0, 0, 320, 44);
@@ -81,16 +81,20 @@
     UIView *line = [[UIView alloc] initWithFrame:CGRectMake(0, 43, 300, 1)];
     [line setBackgroundColor:[UIColor colorWithWhite:0.04 alpha:1]];
     [view addSubview:line];
-	self.view.frame = CGRectMake(0.0f, 0.0f, kGHRevealSidebarWidth, CGRectGetHeight(self.view.bounds));
-	self.view.autoresizingMask = UIViewAutoresizingFlexibleHeight;
+    self.view.frame = CGRectMake(0.0f, 0.0f, kGHRevealSidebarWidth, CGRectGetHeight(self.view.bounds));
+    self.view.autoresizingMask = UIViewAutoresizingFlexibleHeight;
 	
 	[self.view addSubview:view];
 	[self addButtons:view];
     
     isPlayer = NO;
     
-	_menuTableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0f, 44.0f, kGHRevealSidebarWidth, CGRectGetHeight(self.view.bounds))
+	_menuTableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0f, 64.0f, kGHRevealSidebarWidth, CGRectGetHeight(self.view.bounds))
 												  style:UITableViewStylePlain];
+    if (SYSTEM_VERSION_LESS_THAN(@"7.0")) {
+        _menuTableView.frame = CGRectMake(0.0f, 44.0f, kGHRevealSidebarWidth, CGRectGetHeight(self.view.bounds));
+        view.frame = CGRectMake(0.0f, 0.0f, 300.0f, 44.0f);
+    }
 	_menuTableView.delegate = self;
 	_menuTableView.dataSource = self;
 	_menuTableView.autoresizingMask = UIViewAutoresizingFlexibleHeight;
@@ -177,10 +181,7 @@
     
 }
 
-- (void)updatePlayPause:(NSNotification *)notification {
-    NSLog(@"called updatePlayPause");
-    [playpause setImage:[[notification userInfo] valueForKey:@"image"] forState:UIControlStateNormal];
-}
+
 
 - (void) moveSideBar {
     [_sidebarVC toggleSidebar:YES duration:kGHRevealSidebarDefaultAnimationDuration];

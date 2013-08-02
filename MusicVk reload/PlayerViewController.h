@@ -13,6 +13,7 @@
 #import <AudioToolbox/AudioToolbox.h>
 #import <MediaPlayer/MediaPlayer.h>
 #import "circle.h"
+#import "PickThemeView.h"
 #import "THLabel.h"
 
 @interface PlayerViewController : UIViewController <NSFetchedResultsControllerDelegate, AVAudioPlayerDelegate, AVAudioSessionDelegate, NSURLConnectionDelegate, UIGestureRecognizerDelegate> {

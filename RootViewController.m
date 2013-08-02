@@ -7,9 +7,11 @@
 //
 
 #import "RootViewController.h"
-#import "DemoViewController.h"
-#import "SecondViewController.h"
+#import "GHRootViewController.h"
+#import "VkAudioViewController.h"
 #import "AppDelegate.h"
+#import "ItunesViewController.h"
+#import "NavController.h"
 
 @interface RootViewController ()
 
@@ -20,7 +22,17 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-	self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Menu" style:UIBarButtonItemStyleBordered target:self action:@selector(showMenu)];
+	//self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Menu" style:UIBarButtonItemStyleBordered target:self action:@selector(showMenu)];
+    UIButton *buttonBack = [UIButton buttonWithType:UIButtonTypeCustom];
+    [buttonBack setBackgroundColor:[UIColor clearColor]];
+    [buttonBack setFrame:CGRectMake(40, 10, 30, 19)];
+    [buttonBack setImage:[UIImage imageNamed:@"menu2.png"] forState:UIControlStateNormal];
+    [buttonBack addTarget:self action:@selector(showMenu) forControlEvents:UIControlEventTouchUpInside];
+    [buttonBack setImage:[UIImage imageNamed:@"menu2pressed.png"] forState:UIControlStateHighlighted];
+    [buttonBack setShowsTouchWhenHighlighted:NO];
+    UIBarButtonItem *backButton = [[UIBarButtonItem alloc]
+                                   initWithCustomView:buttonBack];
+    [self.navigationItem setLeftBarButtonItem: backButton];
 }
 
 #pragma mark -
@@ -28,62 +40,53 @@
 
 - (void)showMenu
 {
+    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    NSArray *controllers = appDelegate.controllers;
     if (!_sideMenu) {
-        RESideMenuItem *homeItem = [[RESideMenuItem alloc] initWithTitle:@"Home" action:^(RESideMenu *menu, RESideMenuItem *item) {
+        RESideMenuItem *homeItem = [[RESideMenuItem alloc] initWithTitle:@" Сохраненные" action:^(RESideMenu *menu, RESideMenuItem *item) {
             [menu hide];
-            
-            DemoViewController *viewController = [[DemoViewController alloc] init];
-            viewController.title = item.title;
-            UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
-            [menu setRootViewController:navigationController];
+            [menu setRootViewController:controllers[0][0]];
         }];
-        RESideMenuItem *exploreItem = [[RESideMenuItem alloc] initWithTitle:@"Explore" action:^(RESideMenu *menu, RESideMenuItem *item) {
+        RESideMenuItem *exploreItem = [[RESideMenuItem alloc] initWithTitle:@" Плейлисты" action:^(RESideMenu *menu, RESideMenuItem *item) {
             [menu hide];
-            
-            SecondViewController *secondViewController = [[SecondViewController alloc] init];
-            secondViewController.title = item.title;
-            UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:secondViewController];
-            [menu setRootViewController:navigationController];
+            [menu setRootViewController:controllers[0][1]];
         }];
-        RESideMenuItem *activityItem = [[RESideMenuItem alloc] initWithTitle:@"Activity" action:^(RESideMenu *menu, RESideMenuItem *item) {
+        RESideMenuItem *activityItem = [[RESideMenuItem alloc] initWithTitle:@" Настройки" action:^(RESideMenu *menu, RESideMenuItem *item) {
             [menu hide];
             NSLog(@"Item %@", item);
+            [menu setRootViewController:controllers[0][2]];
         }];
-        RESideMenuItem *profileItem = [[RESideMenuItem alloc] initWithTitle:@"Profile" action:^(RESideMenu *menu, RESideMenuItem *item) {
+        RESideMenuItem *profileItem = [[RESideMenuItem alloc] initWithTitle:@" Аудиозаписи" action:^(RESideMenu *menu, RESideMenuItem *item) {
             [menu hide];
             NSLog(@"Item %@", item);
+            [menu setRootViewController:controllers[1][0]];
         }];
-        RESideMenuItem *aroundMeItem = [[RESideMenuItem alloc] initWithTitle:@"Around Me" action:^(RESideMenu *menu, RESideMenuItem *item) {
+        RESideMenuItem *aroundMeItem = [[RESideMenuItem alloc] initWithTitle:@" Itunes" action:^(RESideMenu *menu, RESideMenuItem *item) {
             [menu hide];
             NSLog(@"Item %@", item);
+            [menu setRootViewController:controllers[1][1]];
         }];
         
-        RESideMenuItem *helpPlus1 = [[RESideMenuItem alloc] initWithTitle:@"How to use" action:^(RESideMenu *menu, RESideMenuItem *item) {
+        RESideMenuItem *helpPlus1 = [[RESideMenuItem alloc] initWithTitle:@" Рекомендации" action:^(RESideMenu *menu, RESideMenuItem *item) {
             NSLog(@"Item %@", item);
             [menu hide];
+            [menu setRootViewController:controllers[1][2]];
         }];
         
-        RESideMenuItem *helpPlus2 = [[RESideMenuItem alloc] initWithTitle:@"Helpdesk" action:^(RESideMenu *menu, RESideMenuItem *item) {
+        RESideMenuItem *helpPlus2 = [[RESideMenuItem alloc] initWithTitle:@" Поиск" action:^(RESideMenu *menu, RESideMenuItem *item) {
             NSLog(@"Item %@", item);
             [menu hide];
+            [menu setRootViewController:controllers[1][3]];
         }];
         
-        RESideMenuItem *helpCenterItem = [[RESideMenuItem alloc] initWithTitle:@"Help+" action:^(RESideMenu *menu, RESideMenuItem *item) {
-            NSLog(@"Item %@", item);
-        }];
-        helpCenterItem.subItems  = @[helpPlus1,helpPlus2];
-        
-        RESideMenuItem *itemWithSubItems = [[RESideMenuItem alloc] initWithTitle:@"Others+" action:^(RESideMenu *menu, RESideMenuItem *item) {
-            NSLog(@"Item %@", item);
-        }];
-        itemWithSubItems.subItems = @[aroundMeItem,helpCenterItem];
-        
-        RESideMenuItem *logOutItem = [[RESideMenuItem alloc] initWithTitle:@"Log out" action:^(RESideMenu *menu, RESideMenuItem *item) {
+        RESideMenuItem *logOutItem = [[RESideMenuItem alloc] initWithTitle:@" Log out" action:^(RESideMenu *menu, RESideMenuItem *item) {
             UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Confirmation" message:@"Are you sure you want to log out?" delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:@"Log Out", nil];
             [alertView show];
         }];
         
-        _sideMenu = [[RESideMenu alloc] initWithItems:@[homeItem, exploreItem, activityItem, profileItem,itemWithSubItems, logOutItem]];
+        // в апдейте ОС 7, когда будет работать импорт из itunes, поставить после homeItem aroundMeItem
+        
+        _sideMenu = [[RESideMenu alloc] initWithItems:@[homeItem,  exploreItem, activityItem, profileItem, helpPlus1, helpPlus2, logOutItem]];
         _sideMenu.verticalOffset = IS_WIDESCREEN ? 110 : 76;
         _sideMenu.hideStatusBarArea = [AppDelegate OSVersion] < 7;
     }

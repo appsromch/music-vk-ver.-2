@@ -24,8 +24,9 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "CustomCell.h"
 
-@interface RESideMenuCell : UITableViewCell
+@interface RESideMenuCell : CustomCell
 
 @property (assign, readwrite, nonatomic) CGFloat horizontalOffset;
 

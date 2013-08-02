@@ -10,6 +10,7 @@
 #import "customSearchBar.h"
 #import "vkLogin.h"
 #import "PlayerViewController.h"
+#import "CustomCell.h"
 
 #pragma mark -
 #pragma mark Private Interface
@@ -32,16 +33,9 @@
 		self.title = @"";
 		_revealBlock = [revealBlock copy];
         managedObjectContext = managedObjectC;
-        UIButton *buttonBack = [UIButton buttonWithType:UIButtonTypeCustom];
-        [buttonBack setFrame:CGRectMake(40, 10, 30, 19)];
-        [buttonBack setImage:[UIImage imageNamed:@"menu2.png"] forState:UIControlStateNormal];
-        [buttonBack addTarget:self action:@selector(revealSidebar) forControlEvents:UIControlEventTouchUpInside];
-        [buttonBack setImage:[UIImage imageNamed:@"menu2pressed.png"] forState:UIControlStateHighlighted];
-        [buttonBack setShowsTouchWhenHighlighted:NO];
-                UIBarButtonItem *backButton = [[UIBarButtonItem alloc]
-                                       initWithCustomView:buttonBack];
-        [self.navigationItem setLeftBarButtonItem: backButton];
+        
         UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        [rightButton setBackgroundColor:[UIColor clearColor]];
         [rightButton setFrame:CGRectMake(10, 2, 200, 40)];
         [rightButton setBackgroundColor:[UIColor clearColor]];
         [rightButton setAutoresizingMask:UIViewAutoresizingFlexibleHeight];
@@ -60,13 +54,20 @@
 }
 
 #pragma mark UIViewController
+- (void) viewWillDisappear:(BOOL)animated {
+    NSLog(@"dissapear");
+    [table setContentOffset:CGPointMake(0,40)];
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
 	self.view.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
-	self.view.backgroundColor = [UIColor whiteColor];
+	self.view.backgroundColor = [UIColor clearColor];
     table = [[UITableView alloc] init];
     [table setDelegate:self];
     [table setDataSource:self];
+    [table setAlpha:1];
+    [table setHidden:NO];
     [table setBackgroundColor:[UIColor clearColor]];
     [table setSeparatorColor:[UIColor colorWithWhite:0 alpha:0.05]];
     allSongsLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 18)];
@@ -198,16 +199,19 @@
     else {
         id <NSFetchedResultsSectionInfo> sectionInfo = [[self.fetchedResultsController sections] objectAtIndex:section];
         [allSongsLabel setText:[NSString stringWithFormat:@"Всего песен: %d", [sectionInfo numberOfObjects]]];
+        NSLog(@"table - %f", self.view.layer.opacity);
         return [sectionInfo numberOfObjects];
     }
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     static NSString *SimpleTableIdentifier = @"SimpleTableIdentifier";
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:SimpleTableIdentifier];
+   // UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:SimpleTableIdentifier];
+    CustomCell *cell = [tableView dequeueReusableCellWithIdentifier:SimpleTableIdentifier];
     if (cell == nil) {
-        cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:SimpleTableIdentifier];
+        cell = [[CustomCell alloc]initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:SimpleTableIdentifier];
         [cell.contentView setBackgroundColor:[UIColor clearColor]];
+        [cell setBackgroundColor:[UIColor clearColor]];
     }
     [self configureCell:cell atIndexPath:indexPath];
     return cell;
@@ -307,7 +311,7 @@
     [self saveContext];
 }
 
-- (void)configureCell:(UITableViewCell *)cell atIndexPath:(NSIndexPath *)indexPath
+- (void)configureCell:(CustomCell *)cell atIndexPath:(NSIndexPath *)indexPath
 {
     if (searching) {
         NSManagedObject *managedObject = [filteredArray objectAtIndex:indexPath.row];
@@ -316,10 +320,16 @@
         [cell.textLabel setFont:[UIFont fontWithName:@"Helvetica-Light" size:16]];
         [cell.textLabel setTextColor:[UIColor whiteColor]];
         [cell.textLabel setBackgroundColor:[UIColor clearColor]];
+        [cell.textLabel setShadowColor:[UIColor colorWithWhite:0 alpha:0.5]];
+        [cell.textLabel setShadowOffset:CGSizeZero];
+        [cell.textLabel setShadowBlur:2.0f];
         cell.detailTextLabel.text = [[managedObject valueForKey:@"artist"] description];
         [cell.detailTextLabel setFont:[UIFont fontWithName:@"Helvetica-Light" size:12]];
         [cell.detailTextLabel setTextColor:[UIColor colorWithWhite:1 alpha:0.7]];
         [cell.detailTextLabel setBackgroundColor:[UIColor clearColor]];
+        [cell.detailTextLabel setShadowColor:[UIColor colorWithWhite:0 alpha:0.5]];
+        [cell.detailTextLabel setShadowOffset:CGSizeZero];
+        [cell.detailTextLabel setShadowBlur:2.0f];
     }
     else {
         NSManagedObject *managedObject = [self.fetchedResultsController objectAtIndexPath:indexPath];
@@ -328,10 +338,16 @@
         [cell.textLabel setFont:[UIFont fontWithName:@"Helvetica-Light" size:16]];
         [cell.textLabel setTextColor:[UIColor whiteColor]];
         [cell.textLabel setBackgroundColor:[UIColor clearColor]];
+        [cell.textLabel setShadowColor:[UIColor colorWithWhite:0 alpha:0.5]];
+        [cell.textLabel setShadowOffset:CGSizeZero];
+        [cell.textLabel setShadowBlur:2.0f];
         cell.detailTextLabel.text = [[managedObject valueForKey:@"artist"] description];
         [cell.detailTextLabel setFont:[UIFont fontWithName:@"Helvetica-Light" size:12]];
         [cell.detailTextLabel setTextColor:[UIColor colorWithWhite:1 alpha:0.7]];
         [cell.detailTextLabel setBackgroundColor:[UIColor clearColor]];
+        [cell.detailTextLabel setShadowColor:[UIColor colorWithWhite:0 alpha:0.5]];
+        [cell.detailTextLabel setShadowOffset:CGSizeZero];
+        [cell.detailTextLabel setShadowBlur:2.0f];
     }
 }
 

@@ -11,15 +11,14 @@
 #import <CoreData/CoreData.h>
 #import "RootViewController.h"
 
-@interface PlayListView : RootViewController <UITableViewDataSource, UITableViewDelegate, NSURLConnectionDelegate, NSFetchedResultsControllerDelegate> {
+@interface PlayListView : RootViewController <UITableViewDataSource, UITableViewDelegate, NSFetchedResultsControllerDelegate, UIAlertViewDelegate> {
 @private
 	RevealBlock _revealBlock;
     UITableView *table;
     ODRefreshControl *refreshControl;
     NSMutableArray *audioArray;
-    NSMutableDictionary *dictionaryForConnection;
-    NSMutableDictionary *progressViewsForConnection;
-    NSMutableDictionary *expectedLength;
+    NSMutableDictionary *playlistArray;
+    NSString *plpath;
 }
 @property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
 @property (strong, nonatomic) NSManagedObjectContext *managedObjectContext;

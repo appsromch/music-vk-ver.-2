@@ -157,6 +157,7 @@
 }
 
 - (void) openPlayer {
+    _menuVC = self.window.rootViewController;
     [UIView transitionWithView:self.window
                       duration:0.5
                        options:UIViewAnimationOptionTransitionCrossDissolve

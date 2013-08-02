@@ -46,6 +46,7 @@ NSString const *kSidebarCellHighlightedImageKey = @"CellImageHighlighted";
 		self.imageView.contentMode = UIViewContentModeCenter;
 		
 		self.textLabel.font = [UIFont fontWithName:@"Helvetica-Light" size:([UIFont systemFontSize] * 1.1f)];
+        [self.textLabel setBackgroundColor:[UIColor clearColor]];
 		self.textLabel.shadowOffset = CGSizeMake(0.0f, 1.0f);
 		self.textLabel.shadowColor = [UIColor colorWithWhite:0.0f alpha:0.99f];
 		self.textLabel.textColor = [UIColor colorWithRed:(155.0f/255.0f) green:(155.0f/255.0f) blue:(155.0f/255.0f) alpha:1.0f];

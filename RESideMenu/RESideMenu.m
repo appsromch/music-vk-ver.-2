@@ -26,6 +26,11 @@
 #import "RESideMenu.h"
 #import "AccelerationAnimation.h"
 #import "Evaluate.h"
+#import "CustomCell.h"
+#import "UIImage+StackBlur.h"
+#import "UIImage+Brightness.h"
+
+#define SYSTEM_VERSION_LESS_THAN(v)                 ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedAscending)
 
 const int INTERSTITIAL_STEPS = 99;
 
@@ -39,6 +44,7 @@ const int INTERSTITIAL_STEPS = 99;
 @property (strong, readonly, nonatomic) REBackgroundView *backgroundView;
 @property (strong, readonly, nonatomic) UIImageView *screenshotView;
 @property (strong, readonly, nonatomic) UITableView *tableView;
+@property (nonatomic, retain) UIButton *playerView;
 
 // Array containing menu (which are array of items)
 @property (strong, readwrite, nonatomic) NSMutableArray *menuStack;
@@ -53,14 +59,14 @@ const int INTERSTITIAL_STEPS = 99;
     self = [super init];
     if (!self)
         return nil;
-    
+    NSLog(@"inited");
     self.verticalOffset = 100;
     self.horizontalOffset = 50;
     self.itemHeight = 50;
     self.font = [UIFont fontWithName:@"HelveticaNeue-Light" size:21];
     self.textColor = [UIColor whiteColor];
     self.highlightedTextColor = [UIColor lightGrayColor];
-    self.hideStatusBarArea = YES;
+    self.hideStatusBarArea = NO;
     
     self.menuStack = [NSMutableArray array];
     
@@ -72,12 +78,76 @@ const int INTERSTITIAL_STEPS = 99;
     self = [self init];
     if (!self)
         return nil;
-    
     _items = items;
     [_menuStack addObject:items];
     _backMenu = [[RESideMenuItem alloc] initWithTitle:@"<" action:nil];
-    
+    _songName = [[THLabel alloc] initWithFrame:CGRectMake(60, 12, 200, 20)];
+    [_songName setTextColor:[UIColor whiteColor]];
+    [_songName setBackgroundColor:[UIColor clearColor]];
+    [_songName setFont:[UIFont fontWithName:@"Helvetica-Light" size:16]];
+    [_songName setShadowColor:[UIColor colorWithWhite:0 alpha:0.5]];
+    [_songName setShadowOffset:CGSizeZero];
+    [_songName setNumberOfLines:1];
+    [_songName setShadowBlur:6.0f];
+    _timeLabel = [[THLabel alloc] initWithFrame:CGRectMake(260, 12, 200, 20)];
+    [_timeLabel setTextColor:[UIColor whiteColor]];
+    [_timeLabel setBackgroundColor:[UIColor clearColor]];
+    [_timeLabel setFont:[UIFont fontWithName:@"Helvetica-Light" size:12]];
+    [_timeLabel setShadowColor:[UIColor colorWithWhite:0 alpha:0.5]];
+    [_timeLabel setShadowOffset:CGSizeZero];
+    [_timeLabel setShadowBlur:3.0f];
+    _playPause = [UIButton buttonWithType:UIButtonTypeCustom];
+    [_playPause setFrame:CGRectMake(8, 0, 44, 44)];
+    [_playPause setBackgroundColor:[UIColor clearColor]];
+    [_playPause setImageEdgeInsets:UIEdgeInsetsMake(7, 0, 7, 0)];
+    [_playPause setImage:[UIImage imageNamed:@"bigplay.png"] forState:UIControlStateNormal];
+    [_playPause setImage:[UIImage imageNamed:@"bigpause.png"] forState:UIControlStateSelected];
+    [_playPause addTarget:self action:@selector(playPauseFunc:) forControlEvents:UIControlEventTouchUpInside];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(updFunc:)
+                                                 name:@"menuUpdate"
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(updatePlayPause:)
+                                                 name:@"updatePlayPause"
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(setBg)
+                                                 name:@"newBg"
+                                               object:nil];
+    [self setBg];
     return self;
+}
+
+- (void) setBg {
+    NSUserDefaults *ud = [NSUserDefaults standardUserDefaults];
+    NSString *bgname = [ud objectForKey:@"bgPic"];
+    if (bgname == nil) {
+        bgname = @"playerbg1.jpg";
+        [ud setValue:bgname forKey:@"bgPic"];
+        [ud synchronize];
+    }
+    UIImage *img = [UIImage imageNamed:bgname];
+    img = [img imageWithBrightness:0.19f];
+    _backgroundImage = img;
+}
+
+- (void)updatePlayPause:(NSNotification *)notification {
+    NSLog(@"called updatePlayPause");
+    [_playPause setImage:[[notification userInfo] valueForKey:@"image"] forState:UIControlStateNormal];
+}
+
+- (void) updFunc: (NSNotification *) note{
+    [_songName setText:[note.userInfo objectForKey:@"name"]];
+    NSString *time = [NSString stringWithFormat:@"%@ %@", [note.userInfo objectForKey:@"time"], [note.userInfo objectForKey:@"timeLeft"]];
+    [_timeLabel setText:time];
+  //  BOOL pl = (BOOL)[note.userInfo objectForKey:@"playing"];
+  //  [_playPause setSelected:pl];
+}
+
+- (void) playPauseFunc:(id) button {
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"PlayerPlay" object:nil];
 }
 
 - (void) showItems:(NSArray *)items
@@ -118,7 +188,7 @@ const int INTERSTITIAL_STEPS = 99;
     _appIsHidingStatusBar=[[UIApplication sharedApplication] isStatusBarHidden];
     
     if(!_appIsHidingStatusBar)
-        [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
+        [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
     
     [self performSelector:@selector(showAfterDelay) withObject:nil afterDelay:0.1];
 }
@@ -171,6 +241,15 @@ const int INTERSTITIAL_STEPS = 99;
     _backgroundView.backgroundImage = _backgroundImage;
     [window addSubview:_backgroundView];
     
+    _playerView = [UIButton buttonWithType:UIButtonTypeCustom];
+    [_playerView setFrame:CGRectMake(0, 50, 320, 44)];               // initWithFrame:CGRectMake(0, 50, 320, 44)];
+    [_playerView setBackgroundColor:[UIColor colorWithWhite:1 alpha:0.0]];
+    [_playerView addSubview:_playPause];
+    [_playerView addSubview:_songName];
+    [_playerView addSubview:_timeLabel];
+    [_playerView addTarget:self action:@selector(openPl) forControlEvents:UIControlEventTouchUpInside];
+    
+    
     _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, window.frame.size.width, window.frame.size.height)];
     _tableView.backgroundColor = [UIColor clearColor];
     _tableView.backgroundView = nil;
@@ -180,6 +259,7 @@ const int INTERSTITIAL_STEPS = 99;
     _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     _tableView.alpha = 0;
     [window addSubview:_tableView];
+    [window addSubview:_playerView];
     
     [window addSubview:_screenshotView];
     
@@ -225,6 +305,7 @@ const int INTERSTITIAL_STEPS = 99;
 
 - (void)restoreFromRect:(CGRect)rect
 {
+    [[UIApplication sharedApplication] setStatusBarHidden:_appIsHidingStatusBar withAnimation:UIStatusBarAnimationNone];
     _screenshotView.userInteractionEnabled = NO;
     while (_screenshotView.gestureRecognizers.count) {
         [_screenshotView removeGestureRecognizer:[_screenshotView.gestureRecognizers objectAtIndex:0]];
@@ -250,7 +331,7 @@ const int INTERSTITIAL_STEPS = 99;
     }];
     
     // restore the status bar to its original state.
-    [[UIApplication sharedApplication] setStatusBarHidden:_appIsHidingStatusBar withAnimation:UIStatusBarAnimationFade];
+    
     _isShowing = NO;
 }
 
@@ -264,6 +345,7 @@ const int INTERSTITIAL_STEPS = 99;
     }];
     [_backgroundView removeFromSuperview];
     [_tableView removeFromSuperview];
+    [_playerView removeFromSuperview];
 }
 
 #pragma mark -
@@ -306,16 +388,71 @@ const int INTERSTITIAL_STEPS = 99;
     [self restoreFromRect:_screenshotView.frame];
 }
 
+- (void)openPl
+{
+    NSLog(@"touched");
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"openPlayer" object:nil];
+    //[self performSelector:@selector(lateRestore) withObject:nil afterDelay:0.4];
+     [self restoreFromRect:_screenshotView.frame];
+}
+
+- (void) lateRestore {
+    [self restoreFromRect:_screenshotView.frame];
+}
+
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return 1;
+    return 2;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return _items.count;
+    if (section == 0) {
+        return 3;
+    }
+    else {
+        return 4;
+    }
+  //  return _items.count;
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+	UIView *headerView = nil;
+	if (section == 1) {
+		headerView = [[UIView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, [UIScreen mainScreen].bounds.size.height, 21.0f)];
+		CAGradientLayer *gradient = [CAGradientLayer layer];
+		gradient.frame = headerView.bounds;
+		gradient.colors = @[
+                            (id)[UIColor colorWithRed:(255.0f/255.0f) green:(255.0f/255.0f) blue:(255.0f/255.0f) alpha:0.0f].CGColor,
+                            (id)[UIColor colorWithRed:(235.0f/255.0f) green:(235.0f/255.0f) blue:(235.0f/255.0f) alpha:0.0f].CGColor,
+                            ];
+		[headerView.layer insertSublayer:gradient atIndex:0];
+		
+		UILabel *textLabel = [[UILabel alloc] initWithFrame:CGRectInset(headerView.bounds, 12.0f, 5.0f)];
+		textLabel.text = @"Вконтакте";
+		textLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:([UIFont systemFontSize] * 0.8f)];
+		textLabel.shadowOffset = CGSizeMake(0.0f, 1.0f);
+		textLabel.shadowColor = [UIColor colorWithWhite:0.0f alpha:0.25f];
+		textLabel.textColor = [UIColor colorWithRed:(225.0f/255.0f) green:(225.0f/255.0f) blue:(225.0f/255.0f) alpha:1.0f];
+		textLabel.backgroundColor = [UIColor clearColor];
+		[headerView addSubview:textLabel];
+		
+		UIView *topLine = [[UIView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, [UIScreen mainScreen].bounds.size.height, 1.0f)];
+		topLine.backgroundColor = [UIColor colorWithRed:(50.0f/255.0f) green:(50.0f/255.0f) blue:(50.0f/255.0f) alpha:0.0f];
+		[headerView addSubview:topLine];
+		
+		UIView *bottomLine = [[UIView alloc] initWithFrame:CGRectMake(0.0f, 21.0f, [UIScreen mainScreen].bounds.size.height, 1.0f)];
+		bottomLine.backgroundColor = [UIColor colorWithRed:(10.0f/255.0f) green:(10.0f/255.0f) blue:(10.0f/255.0f) alpha:0.0f];
+		[headerView addSubview:bottomLine];
+	}
+    if (section == 0) {
+        headerView = [[UIView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, [UIScreen mainScreen].bounds.size.height, 21.0f)];
+        [headerView setBackgroundColor:[UIColor clearColor]];
+    }
+	return headerView;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -332,13 +469,21 @@ const int INTERSTITIAL_STEPS = 99;
         cell = [[RESideMenuCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
         cell.backgroundColor = [UIColor clearColor];
         cell.selectedBackgroundView = [[UIView alloc] init];
-        cell.textLabel.font = self.font;
+      //  cell.textLabel.font = self.font;
+        cell.textLabel.font = [UIFont fontWithName:@"HelveticaNeue-Thin" size:24];
+        if (SYSTEM_VERSION_LESS_THAN(@"7.0")) {
+            cell.textLabel.font = self.font;
+        }
         cell.textLabel.textColor = self.textColor;
+        [cell.textLabel setShadowColor:[UIColor colorWithWhite:0 alpha:0.4]];
+        [cell.textLabel setShadowOffset:CGSizeZero];
+        [cell.textLabel setShadowBlur:8.0f];
         cell.textLabel.highlightedTextColor = self.highlightedTextColor;
     }
     
     
     RESideMenuItem *item = [_items objectAtIndex:indexPath.row];
+    if (indexPath.section == 1) item = [_items objectAtIndex:indexPath.row + 3];
     cell.textLabel.text = item.title;
     cell.imageView.image = item.image;
     cell.imageView.highlightedImage = item.highlightedImage;
@@ -352,7 +497,13 @@ const int INTERSTITIAL_STEPS = 99;
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    RESideMenuItem *item = [_items objectAtIndex:indexPath.row];
+    RESideMenuItem *item;
+    if (indexPath.section == 0) {
+        item = [_items objectAtIndex:indexPath.row];
+    }
+    else {
+        item = [_items objectAtIndex:indexPath.row + 3];
+    }
     
     // Case back on subMenu
     if(_isInSubMenu &&

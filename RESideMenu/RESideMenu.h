@@ -29,6 +29,7 @@
 #import "REBackgroundView.h"
 #import "RESideMenuCell.h"
 #import "RESideMenuItem.h"
+#import "THLabel.h"
 
 @interface RESideMenu : NSObject <UITableViewDataSource, UITableViewDelegate>
 
@@ -42,6 +43,9 @@
 @property (strong, readwrite, nonatomic) UIImage *backgroundImage;
 @property (assign, readwrite, nonatomic) BOOL hideStatusBarArea;
 @property (assign, readwrite, nonatomic) BOOL isShowing;
+@property (nonatomic, retain) THLabel *songName;
+@property (nonatomic, retain) THLabel *timeLabel;
+@property (nonatomic, retain) UIButton *playPause;
 
 - (id)initWithItems:(NSArray *)items;
 - (void)show;

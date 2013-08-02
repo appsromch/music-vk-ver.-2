@@ -79,6 +79,7 @@
     NSUserDefaults *ud = [NSUserDefaults standardUserDefaults];
     [self.view setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:[ud objectForKey:@"bgPic"]]]];
     circleView = [[circle alloc] initWithFrame:self.view.bounds];
+    [circleView setAlpha:0.25];
     circleView.percent = 100;
     
     CGRect screen = [[UIScreen mainScreen] bounds];
@@ -162,9 +163,9 @@
     rwd.direction = UISwipeGestureRecognizerDirectionLeft;
     [self.view addGestureRecognizer:rwd];
     
- /*   UILongPressGestureRecognizer *progressTap = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(progressTapFunc:)];
+    UILongPressGestureRecognizer *progressTap = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(progressTapFunc:)];
     [progressTap setMinimumPressDuration:0.5];
-    [self.view addGestureRecognizer:progressTap]; */
+    [self.view addGestureRecognizer:progressTap];
     
     NSLog(@"padding = %f", padding);
     
@@ -491,8 +492,9 @@
         }else {
             [player setNumberOfLoops:0];
         }
-        [player play];
+        
         dispatch_async(dispatch_get_main_queue(), ^{
+            [player play];
             [songTitleLabel setText:[[managedObject valueForKey:@"title"] description]];
             [songArtistLabel setText:[[managedObject valueForKey:@"artist"] description]];
             int numForLabel = currentNumber + 1;
@@ -742,8 +744,9 @@
             }else {
                 [player setNumberOfLoops:0];
             }
-            [player play];
+            
             dispatch_async(dispatch_get_main_queue(), ^{
+                [player play];
                 [songTitleLabel setText:[[managedObject valueForKey:@"title"] description]];
                 [songArtistLabel setText:[[managedObject valueForKey:@"artist"] description]];
                 NSDictionary *ar = [NSDictionary dictionaryWithObjectsAndKeys:songTitleLabel.text, @"title", songArtistLabel.text, @"artist", nil];
@@ -853,11 +856,35 @@
     mplayer.volume = [sender value];
 }
 
-- (void) progressTapFunc: (UIGestureRecognizer *) grec {
-    [grec setEnabled:NO];
-    CGPoint location = [grec locationInView:grec.view];
-    [progressSlider setFrame:CGRectMake(0, location.y, self.view.frame.size.width, 30)];
-    [self.view addSubview:progressSlider];
+- (void)progressTapFunc:(UILongPressGestureRecognizer *)gesture
+{
+    CGPoint location = [gesture locationInView:gesture.view];
+    if(gesture.state == UIGestureRecognizerStateBegan)
+    {
+        //if needed do some initial setup or init of views here
+        NSLog(@"began");
+        [UIView animateWithDuration:0.3 animations:^(void){
+            [circleView setAlpha:1];
+        }];
+    }
+    else if(gesture.state == UIGestureRecognizerStateChanged)
+    {
+        //move your views here.
+        if (location.x > 19 && location.x < 301) {
+            float position = (location.x - 20)/280;
+            float result = player.duration * position;
+            player.currentTime = result;
+            [self updateCurrentTimeForPlayer:player];
+        }
+    }
+    else if(gesture.state == UIGestureRecognizerStateEnded)
+    {
+        //else do cleanup
+        NSLog(@"ended");
+        [UIView animateWithDuration:0.3 animations:^(void){
+            [circleView setAlpha:0.25];
+        }];
+    }
 }
 
 - (void)progressSliderMoved:(UISlider *)sender
@@ -1087,6 +1114,7 @@
         }
         [player play];
         dispatch_async(dispatch_get_main_queue(), ^{
+            [player play];
             [loadLabel setHidden:YES];
             [saveButton setHidden:NO];
             NSDictionary *ar = [NSDictionary dictionaryWithObjectsAndKeys:songTitleLabel.text, @"title", songArtistLabel.text, @"artist", nil];
