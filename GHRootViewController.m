@@ -6,7 +6,7 @@
 //
 
 #import "GHRootViewController.h"
-#import "GHPushedViewController.h"
+//#import "GHPushedViewController.h"
 #import "customSearchBar.h"
 #import "vkLogin.h"
 #import "PlayerViewController.h"
@@ -54,10 +54,6 @@
 }
 
 #pragma mark UIViewController
-- (void) viewWillDisappear:(BOOL)animated {
-    NSLog(@"dissapear");
-    [table setContentOffset:CGPointMake(0,40)];
-}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -131,11 +127,6 @@
 }
 
 #pragma mark Private Methods
-- (void)pushViewController {
-	NSString *vcTitle = [self.title stringByAppendingString:@" - Pushed"];
-	UIViewController *vc = [[GHPushedViewController alloc] initWithTitle:vcTitle];
-	[self.navigationController pushViewController:vc animated:YES];
-}
 
 - (void)revealSidebar {
 	_revealBlock();
@@ -194,8 +185,10 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    if (searching)
+    if (searching){
+        [allSongsLabel setText:[NSString stringWithFormat:@"Всего песен: %d", [filteredArray count]]];
         return [filteredArray count];
+    }
     else {
         id <NSFetchedResultsSectionInfo> sectionInfo = [[self.fetchedResultsController sections] objectAtIndex:section];
         [allSongsLabel setText:[NSString stringWithFormat:@"Всего песен: %d", [sectionInfo numberOfObjects]]];

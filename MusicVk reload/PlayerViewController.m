@@ -57,6 +57,10 @@
                                                  selector:@selector(volumeChanged:)
                                                 name:@"AVSystemController_SystemVolumeDidChangeNotification"
                                                    object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(setBg)
+                                                     name:@"newBg"
+                                                   object:nil];
         mplayer = [MPMusicPlayerController iPodMusicPlayer];
         [self performSelectorOnMainThread:@selector(customMake2) withObject:self waitUntilDone:YES];
         [self registerForBackgroundNotifications];
@@ -1284,7 +1288,8 @@
 }
 
 - (void) changeThemeFunc {
-    
+    PickThemeView *pickThemeView = [[PickThemeView alloc] initWithNibName:@"PickThemeView" bundle:nil];
+    [self presentModalViewController:pickThemeView animated:YES];
 }
 
 - (void) randThemeFunc {
@@ -1308,6 +1313,11 @@
 
 - (void) shareFunc {
     
+}
+
+- (void) setBg {
+    NSUserDefaults *ud = [NSUserDefaults standardUserDefaults];
+    [self.view setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:[ud objectForKey:@"bgPic"]]]];
 }
 
 @end

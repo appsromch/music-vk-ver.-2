@@ -81,6 +81,7 @@
         
         RESideMenuItem *logOutItem = [[RESideMenuItem alloc] initWithTitle:@" Log out" action:^(RESideMenu *menu, RESideMenuItem *item) {
             UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Confirmation" message:@"Are you sure you want to log out?" delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:@"Log Out", nil];
+            [alertView setDelegate:self];
             [alertView show];
         }];
         
@@ -92,6 +93,14 @@
     }
     
     [_sideMenu show];
+}
+
+- (void) alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+    if (buttonIndex == 1) {
+        NSUserDefaults *ud = [NSUserDefaults standardUserDefaults];
+        [ud removeObjectForKey:@"token"];
+        [ud synchronize];
+    }
 }
 
 @end

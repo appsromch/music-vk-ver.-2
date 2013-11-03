@@ -42,6 +42,7 @@
         [rightButton setTitleColor:[UIColor colorWithWhite:0.1 alpha:1] forState:UIControlStateHighlighted];
         [rightButton.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Light" size:18]];
         [rightButton.titleLabel setTextAlignment:NSTextAlignmentRight];
+        [rightButton addTarget:self action:@selector(editFunc:) forControlEvents:UIControlEventTouchUpInside];
         [rightButton setEnabled:NO];
         UIBarButtonItem *rightBarButton = [[UIBarButtonItem alloc] initWithCustomView:rightButton];
         [self.navigationItem setRightBarButtonItem:rightBarButton];
@@ -102,6 +103,7 @@
         [playlistArray setValue:array forKey:tf.text];
         NSLog(@"%@", playlistArray);
         [playlistArray writeToFile:plpath atomically:YES];
+        [table reloadData];
     }
 }
 
@@ -137,20 +139,6 @@
         cell = [[CustomCell alloc]initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:SimpleTableIdentifier];
         [cell.contentView setBackgroundColor:[UIColor clearColor]];
         [cell setBackgroundColor:[UIColor clearColor]];
-        UIButton *play = [UIButton buttonWithType:UIButtonTypeCustom];
-        [play setFrame:CGRectMake(cell.frame.size.width - 80, 5, 30, 30)];
-        [play setImage:[UIImage imageNamed:@"plPlay.png"] forState:UIControlStateNormal];
-        [play addTarget:self action:@selector(cellPlayFunc:) forControlEvents:UIControlEventTouchUpInside];
-        [play setBackgroundColor:[UIColor clearColor]];
-        [play setTag:indexPath.row];
-        [cell.contentView addSubview:play];
-        UIButton *open = [UIButton buttonWithType:UIButtonTypeCustom];
-        [open setFrame:CGRectMake(cell.frame.size.width - 40, 5, 30, 30)];
-        [open setImage:[UIImage imageNamed:@"plOpen.png"] forState:UIControlStateNormal];
-        [open addTarget:self action:@selector(cellOpenFunc:) forControlEvents:UIControlEventTouchUpInside];
-        [open setBackgroundColor:[UIColor clearColor]];
-        [open setTag:indexPath.row];
-        [cell.contentView addSubview:open];
     }
     [cell.contentView setTag:indexPath.row];
     cell.textLabel.text = [playlistArray.allKeys objectAtIndex:indexPath.row];
@@ -170,17 +158,27 @@
     return cell;
 }
 
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
+    NSLog(@"%d", indexPath.row);
+    NSString *key = [playlistArray.allKeys objectAtIndex:indexPath.row];
+    [playlistArray removeObjectForKey:key];
+    [table reloadData];
+    [playlistArray writeToFile:plpath atomically:YES];
+}
+
+- (void) editFunc: (UIButton *) button {
+    if (table.editing == NO) {
+        [table setEditing:YES animated:YES];
+        [button setTitle:@"Готово" forState:UIControlStateNormal];
+    }
+    else { [table setEditing:NO animated:YES];
+        [button setTitle:@"Плейлисты" forState:UIControlStateNormal];
+    }
+}
+
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
     NSLog(@"selected cell at %@, %f, %f", indexPath, cell.frame.origin.x, cell.frame.origin.y);
-}
-
-- (void) cellPlayFunc: (UIButton *) button {
-    NSLog(@"%d", button.superview.tag);
-}
-
-- (void) cellOpenFunc: (UIButton *) button {
-    NSLog(@"%d", button.superview.tag);
 }
 
 - (void)didReceiveMemoryWarning

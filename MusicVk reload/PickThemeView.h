@@ -8,6 +8,17 @@
 
 #import <UIKit/UIKit.h>
 
-@interface PickThemeView : UIPageViewController
+@interface PickThemeView : UIViewController <UIPageViewControllerDataSource, UIPageViewControllerDelegate> {
+    NSUInteger index;
+    NSMutableArray *array;
+}
+
+@property (strong, nonatomic) UIPageViewController *pageController;
+@property (nonatomic, retain) IBOutlet UIButton *cancel;
+@property (nonatomic, retain) IBOutlet UIButton *save;
+
+- (IBAction)cancelFunc:(id)sender;
+- (IBAction)saveFunc:(id)sender;
+
 
 @end

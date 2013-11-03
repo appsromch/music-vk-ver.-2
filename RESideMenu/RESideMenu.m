@@ -275,7 +275,7 @@ const int INTERSTITIAL_STEPS = 99;
 - (void)minimizeFromRect:(CGRect)rect
 {
     UIWindow *window = [[UIApplication sharedApplication] keyWindow];
-    CGFloat m = 0.5;
+    CGFloat m = 0.5 ;
     CGFloat newWidth = _originalSize.width * m;
     CGFloat newHeight = _originalSize.height * m;
     

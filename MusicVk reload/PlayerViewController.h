@@ -19,6 +19,7 @@
 @interface PlayerViewController : UIViewController <NSFetchedResultsControllerDelegate, AVAudioPlayerDelegate, AVAudioSessionDelegate, NSURLConnectionDelegate, UIGestureRecognizerDelegate> {
     MPMusicPlayerController *mplayer;
     AVAudioPlayer *player;
+   // AVPlayer *player;
     RevealBlock _revealBlock;
     NSMutableArray *songDictionary;
     NSURLConnection *theConnection;

@@ -159,7 +159,10 @@
 		63CCFBB117A92ED9000D2319 /* plOpen@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 63CCFBAD17A92ED9000D2319 /* plOpen@2x.png */; };
 		63CCFBB217A92ED9000D2319 /* plPlay.png in Resources */ = {isa = PBXBuildFile; fileRef = 63CCFBAE17A92ED9000D2319 /* plPlay.png */; };
 		63CCFBB317A92ED9000D2319 /* plPlay@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 63CCFBAF17A92ED9000D2319 /* plPlay@2x.png */; };
-		63CCFBB617ABA1D1000D2319 /* PickThemeView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63CCFBB517ABA1D1000D2319 /* PickThemeView.m */; };
+		63CCFBBA17ABA460000D2319 /* PickThemeView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63CCFBB817ABA460000D2319 /* PickThemeView.m */; };
+		63CCFBBB17ABA460000D2319 /* PickThemeView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 63CCFBB917ABA460000D2319 /* PickThemeView.xib */; };
+		63EDD4C917D86F53009FE7E9 /* SettingsView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63EDD4C817D86F53009FE7E9 /* SettingsView.m */; };
+		63EDD4CC17D87560009FE7E9 /* SearchView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63EDD4CB17D87560009FE7E9 /* SearchView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -350,8 +353,13 @@
 		63CCFBAD17A92ED9000D2319 /* plOpen@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "plOpen@2x.png"; sourceTree = "<group>"; };
 		63CCFBAE17A92ED9000D2319 /* plPlay.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = plPlay.png; sourceTree = "<group>"; };
 		63CCFBAF17A92ED9000D2319 /* plPlay@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "plPlay@2x.png"; sourceTree = "<group>"; };
-		63CCFBB417ABA1D1000D2319 /* PickThemeView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PickThemeView.h; sourceTree = "<group>"; };
-		63CCFBB517ABA1D1000D2319 /* PickThemeView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PickThemeView.m; sourceTree = "<group>"; };
+		63CCFBB717ABA460000D2319 /* PickThemeView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PickThemeView.h; sourceTree = "<group>"; };
+		63CCFBB817ABA460000D2319 /* PickThemeView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PickThemeView.m; sourceTree = "<group>"; };
+		63CCFBB917ABA460000D2319 /* PickThemeView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PickThemeView.xib; sourceTree = "<group>"; };
+		63EDD4C717D86F53009FE7E9 /* SettingsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsView.h; sourceTree = "<group>"; };
+		63EDD4C817D86F53009FE7E9 /* SettingsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsView.m; sourceTree = "<group>"; };
+		63EDD4CA17D87560009FE7E9 /* SearchView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SearchView.h; sourceTree = "<group>"; };
+		63EDD4CB17D87560009FE7E9 /* SearchView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SearchView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -498,12 +506,17 @@
 				639CC39A16C677F40053223E /* NavController.m */,
 				63795414175E5C3D0048EBA0 /* PlayListView.h */,
 				63795415175E5C3D0048EBA0 /* PlayListView.m */,
+				63EDD4C717D86F53009FE7E9 /* SettingsView.h */,
+				63EDD4C817D86F53009FE7E9 /* SettingsView.m */,
+				63EDD4CA17D87560009FE7E9 /* SearchView.h */,
+				63EDD4CB17D87560009FE7E9 /* SearchView.m */,
 				63593AA617955AE200F5A4FC /* ItunesViewController.h */,
 				63593AA717955AE200F5A4FC /* ItunesViewController.m */,
 				639CC3F116C7FE5D0053223E /* PlayerViewController.h */,
 				639CC3F216C7FE5D0053223E /* PlayerViewController.m */,
-				63CCFBB417ABA1D1000D2319 /* PickThemeView.h */,
-				63CCFBB517ABA1D1000D2319 /* PickThemeView.m */,
+				63CCFBB717ABA460000D2319 /* PickThemeView.h */,
+				63CCFBB817ABA460000D2319 /* PickThemeView.m */,
+				63CCFBB917ABA460000D2319 /* PickThemeView.xib */,
 				639CC37116C6740B0053223E /* AppDelegate.h */,
 				639CC37216C6740C0053223E /* AppDelegate.m */,
 				639CC42816C8E0DF0053223E /* VkAudioViewController.h */,
@@ -772,6 +785,7 @@
 				6350420516D213CE00133648 /* segoe-ui-light.ttf in Resources */,
 				6350420816D3C13700133648 /* cellSaved.png in Resources */,
 				6350420916D3C13700133648 /* cellSaved@2x.png in Resources */,
+				63CCFBBB17ABA460000D2319 /* PickThemeView.xib in Resources */,
 				63820B59178A9D14004C6737 /* status-bar-progress@2x.png in Resources */,
 				63CCFBB217A92ED9000D2319 /* plPlay.png in Resources */,
 				63AEE34117593A2B00989451 /* icon.png in Resources */,
@@ -812,6 +826,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				63EDD4CC17D87560009FE7E9 /* SearchView.m in Sources */,
 				63820B6C178AA95C004C6737 /* Evaluate.m in Sources */,
 				639CC36F16C6740B0053223E /* main.m in Sources */,
 				639CC37316C6740C0053223E /* AppDelegate.m in Sources */,
@@ -839,13 +854,14 @@
 				639CC43716C8F6640053223E /* coreDataModel.xcdatamodeld in Sources */,
 				63820B6E178AA95C004C6737 /* RESideMenu.m in Sources */,
 				639CC44316CA8D090053223E /* customNSURLConnection.m in Sources */,
-				63CCFBB617ABA1D1000D2319 /* PickThemeView.m in Sources */,
+				63CCFBBA17ABA460000D2319 /* PickThemeView.m in Sources */,
 				637953FA1759FE3D0048EBA0 /* circle.m in Sources */,
 				63820B6B178AA95C004C6737 /* AccelerationAnimation.m in Sources */,
 				63795409175A2AB20048EBA0 /* DirectionPanGestureRecognizer.m in Sources */,
 				63795416175E5C3D0048EBA0 /* PlayListView.m in Sources */,
 				6375DC411765F56200B7AF96 /* UIImage+Brightness.m in Sources */,
 				6379541C175F9B0B0048EBA0 /* customSearchBar.m in Sources */,
+				63EDD4C917D86F53009FE7E9 /* SettingsView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -925,7 +941,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "MusicVk reload/MusicVk reload-Prefix.pch";
 				INFOPLIST_FILE = "MusicVk reload/MusicVk reload-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -937,7 +953,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "MusicVk reload/MusicVk reload-Prefix.pch";
 				INFOPLIST_FILE = "MusicVk reload/MusicVk reload-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};

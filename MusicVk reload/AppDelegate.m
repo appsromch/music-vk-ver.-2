@@ -18,6 +18,8 @@
 #import "PlayListView.h"
 #import "VkAudioViewController.h"
 #import "RESideMenu.h"
+#import "SettingsView.h"
+#import "SearchView.h"
 
 #pragma mark -
 #pragma mark Private Interface
@@ -64,86 +66,18 @@
                                              selector:@selector(openMenu)
                                                  name:@"openMenu"
                                                object:nil];
-    /* UIColor *bgColor = [UIColor colorWithRed:(15.0f/255.0f) green:(15.0f/255.0f) blue:(15.0f/255.0f) alpha:1.0f];
-	self.revealController = [[GHRevealViewController alloc] initWithNibName:nil bundle:nil];
-	self.revealController.view.backgroundColor = bgColor;
-	RevealBlock revealBlock = ^(){
-		[self.revealController toggleSidebar:!self.revealController.sidebarShowing
-									duration:kGHRevealSidebarDefaultAnimationDuration];
-	};
-	
-	NSArray *headers = @[
-                      [NSNull null],
-                      @"Вконтакте"
-                      ];
-	NSArray *controllers = @[
-                          @[
-                              [[NavController alloc] initWithRootViewController:[[GHRootViewController alloc] initWithTitle:@"Сохраненные" withRevealBlock:revealBlock andManagedObject:self.managedObjectContext]],
-                              [[NavController alloc] initWithRootViewController:[[PlayListView alloc] initWithTitle:@"Плейлисты" withRevealBlock:revealBlock andManagedObject:self.managedObjectContext]],
-                              [[NavController alloc] initWithRootViewController:[[GHRootViewController alloc] initWithTitle:@"Настройки" withRevealBlock:revealBlock andManagedObject:self.managedObjectContext]],
-                              ],
-                          @[
-                              [[NavController alloc] initWithRootViewController:[[VkAudioViewController alloc] initWithTitle:@"Аудиозаписи Vk" withRevealBlock:revealBlock andManagedObject:self.managedObjectContext]],
-                              [[NavController alloc] initWithRootViewController:[[GHRootViewController alloc] initWithTitle:@"Плейлисты Vk" withRevealBlock:revealBlock andManagedObject:self.managedObjectContext]],
-                              [[NavController alloc] initWithRootViewController:[[GHRootViewController alloc] initWithTitle:@"Рекомендации Vk" withRevealBlock:revealBlock andManagedObject:self.managedObjectContext]],
-                              [[NavController alloc] initWithRootViewController:[[GHRootViewController alloc] initWithTitle:@"Поиск Vk" withRevealBlock:revealBlock andManagedObject:self.managedObjectContext]],
-                              [[NavController alloc] initWithRootViewController:[[GHRootViewController alloc] initWithTitle:@"Аудиозаписи друзей Vk" withRevealBlock:revealBlock andManagedObject:self.managedObjectContext]],
-                              ]
-                          ];
-	NSArray *cellInfos = @[
-                        @[
-                            @{kSidebarCellImageKey: [UIImage imageNamed:@"navSaved.png"],kSidebarCellHighlightedImageKey: [UIImage imageNamed:@"navSavedS.png"] ,kSidebarCellTextKey: NSLocalizedString(@"Сохраненные", @"")},
-                            @{kSidebarCellImageKey: [UIImage imageNamed:@"navList.png"],kSidebarCellHighlightedImageKey: [UIImage imageNamed:@"navListS.png"] ,kSidebarCellTextKey: NSLocalizedString(@"Плейлисты", @"")},
-                            @{kSidebarCellImageKey: [UIImage imageNamed:@"set.png"],kSidebarCellHighlightedImageKey: [UIImage imageNamed:@"setS.png"] ,kSidebarCellTextKey: NSLocalizedString(@"Настройки", @"")},
-                            ],
-                        @[
-                            @{kSidebarCellTextKey: NSLocalizedString(@"Аудиозаписи", @"")},
-                            @{kSidebarCellTextKey: NSLocalizedString(@"Плейлисты", @"")},
-                            @{kSidebarCellTextKey: NSLocalizedString(@"Рекомендации", @"")},
-                            @{kSidebarCellTextKey: NSLocalizedString(@"Поиск", @"")},
-                            @{kSidebarCellTextKey: NSLocalizedString(@"Аудиозаписи друзей", @"")},
-                            ]
-                        ];
-	
-	// Add drag feature to each root navigation controller
-	[controllers enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop){
-		[((NSArray *)obj) enumerateObjectsUsingBlock:^(id obj2, NSUInteger idx2, BOOL *stop2){
-			UIPanGestureRecognizer *panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self.revealController
-																						 action:@selector(dragContentView:)];
-			panGesture.cancelsTouchesInView = YES;
-			//[((UINavigationController *)obj2).navigationBar addGestureRecognizer:panGesture];
-            [((UINavigationController *)obj2).view addGestureRecognizer:panGesture];
-		}];
-	}];
-      
-    PlayerViewController *playerVC = [[PlayerViewController alloc]initWithRevealBlock:revealBlock andManagedObject:self.managedObjectContext];
-    
-    NavController *playerNC = [[NavController alloc] initWithRootViewController:playerVC];
-    [playerNC.navigationBar setHidden:YES];
-    
-	self.menuController = [[GHMenuViewController alloc] initWithSidebarViewController:self.revealController
-																		withSearchBar:nil
-																		  withHeaders:headers
-																	  withControllers:controllers
-																		withCellInfos:cellInfos
-                                                                           withPlayer:playerNC];
-    CGRect screen = [UIScreen mainScreen].bounds;
-	
-    self.window = [[UIWindow alloc] initWithFrame:CGRectMake(screen.origin.x, screen.origin.y, screen.size.width, screen.size.height)];
-    self.window.rootViewController = self.revealController;
-     */
     _playerVC = [[PlayerViewController alloc]initWithRevealBlock:nil andManagedObject:self.managedObjectContext];
     controllers = @[
                              @[
                                  [[NavController alloc] initWithRootViewController:[[GHRootViewController alloc] initWithTitle:@"Сохраненные" withRevealBlock:nil andManagedObject:self.managedObjectContext]],
                                  [[NavController alloc] initWithRootViewController:[[PlayListView alloc] initWithTitle:@"Плейлисты" withRevealBlock:nil andManagedObject:self.managedObjectContext]],
-                                 [[NavController alloc] initWithRootViewController:[[GHRootViewController alloc] initWithTitle:@"Настройки" withRevealBlock:nil andManagedObject:self.managedObjectContext]],
+                                 [[NavController alloc] initWithRootViewController:[[SettingsView alloc] initWithTitle:@"Настройки" withRevealBlock:nil andManagedObject:self.managedObjectContext]],
                                  ],
                              @[
                                  [[NavController alloc] initWithRootViewController:[[VkAudioViewController alloc] initWithTitle:@"Аудиозаписи Vk" withRevealBlock:nil andManagedObject:self.managedObjectContext]],
                                  [[NavController alloc] initWithRootViewController:[[ItunesViewController alloc] initWithTitle:@"Itunes/Песни" withRevealBlock:nil andManagedObject:self.managedObjectContext]],
-                                 [[NavController alloc] initWithRootViewController:[[GHRootViewController alloc] initWithTitle:@"Рекомендации Vk" withRevealBlock:nil andManagedObject:self.managedObjectContext]],
-                                 [[NavController alloc] initWithRootViewController:[[GHRootViewController alloc] initWithTitle:@"Поиск Vk" withRevealBlock:nil andManagedObject:self.managedObjectContext]],
+                                 [[NavController alloc] initWithRootViewController:[[VkAudioViewController alloc] initWithTitle:@"Рекомендации Vk" withRevealBlock:nil andManagedObject:self.managedObjectContext]],
+                                 [[NavController alloc] initWithRootViewController:[[SearchView alloc] initWithTitle:@"Поиск Vk" withRevealBlock:nil andManagedObject:self.managedObjectContext]],
                                 // [[NavController alloc] initWithRootViewController:[[GHRootViewController alloc] initWithTitle:@"Аудиозаписи друзей Vk" withRevealBlock:nil andManagedObject:self.managedObjectContext]],
                                  ]
                              ];
